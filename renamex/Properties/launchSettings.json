@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RenameX": {
+      "commandName": "Project",
+      "commandLineArgs": "-p \"TIPS - \" -r renamex -rw RenameX -t --mod-ext"
+    }
+  }
+}
