@@ -1,6 +1,6 @@
 ﻿namespace RenameX.Options
 {
-    public interface IOption
+    public interface IRenamingRule
     {
         void GetUserInput();
         string Apply(string fileName);

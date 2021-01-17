@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace RenameX.Options
 {
-    public class PrependTextOption : IOption
+    public class PrependTextRule : IRenamingRule
     {
-        public PrependTextOption()
+        public PrependTextRule()
         {
         }
 
-        public PrependTextOption(string startingText)
+        public PrependTextRule(string startingText)
         {
             StartingText = startingText;
         }

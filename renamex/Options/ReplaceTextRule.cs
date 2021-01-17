@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace RenameX.Options
 {
-    public class ReplaceTextOption : IOption
+    public class ReplaceTextRule : IRenamingRule
     {
-        public ReplaceTextOption()
+        public ReplaceTextRule()
         {
         }
 
-        public ReplaceTextOption(IEnumerable<string> wordsToReplace, string replaceWith)
+        public ReplaceTextRule(IEnumerable<string> wordsToReplace, string replaceWith)
         {
             WordsToReplace = wordsToReplace.ToArray();
             ReplaceWith = replaceWith;

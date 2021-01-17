@@ -7,29 +7,29 @@ using System.Threading.Tasks;
 
 namespace RenameX.Options
 {
-    public class PascalCaseOption : IOption
+    public class TitleCaseRule : IRenamingRule
     {
-        public PascalCaseOption()
+        public TitleCaseRule()
         {
         }
 
-        public PascalCaseOption(bool convertToPascalCase)
+        public TitleCaseRule(bool convertToPascalCase)
         {
-            ConvertToPascalCase = convertToPascalCase;
+            ConvertToTitleCase = convertToPascalCase;
         }
 
-        public bool ConvertToPascalCase { get; set; }
+        public bool ConvertToTitleCase { get; set; }
 
         public void GetUserInput()
         {
             Console.WriteLine("* Do you want to capitalize the beginning of every word? ");
             Console.Write("- [y/N]: ");
-            ConvertToPascalCase = Console.ReadLine()?.ToLower() == "y";
+            ConvertToTitleCase = Console.ReadLine()?.ToLower() == "y";
         }
 
         public string Apply(string fileName)
         {
-            if (ConvertToPascalCase)
+            if (ConvertToTitleCase)
             {
                 TextInfo info = CultureInfo.CurrentCulture.TextInfo;
                 return info.ToTitleCase(fileName);

@@ -18,15 +18,15 @@ namespace RenameX
 
         public FileInfo ExistingFile { get; }
         public bool ModifyExtension { get; }
-        public string? NewName { get; set; }
+        public string NewName { get; set; }
 
-        public void ApplyOptions(IEnumerable<IOption> options)
+        public void ApplyOptions(IEnumerable<IRenamingRule> rules)
         {
             var nameToModify = ModifyExtension ? ExistingFile.Name : Path.GetFileNameWithoutExtension(ExistingFile.Name);
 
-            foreach (var option in options)
+            foreach (var rule in rules)
             {
-                nameToModify = option.Apply(nameToModify);
+                nameToModify = rule.Apply(nameToModify);
             }
 
             NewName = ModifyExtension ? nameToModify : (nameToModify + ExistingFile.Extension);
