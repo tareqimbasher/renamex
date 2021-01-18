@@ -17,6 +17,7 @@ namespace RenameX
         }
 
         public FileInfo ExistingFile { get; }
+        public string OldName => ExistingFile.Name;
         public bool ModifyExtension { get; }
         public string NewName { get; set; }
 

@@ -27,20 +27,39 @@ namespace RenameX
             };
 
             // Arguments
-            var dirArg = cli.Argument("directory", "Directory with files to rename.");
+            var dirArg = cli.Argument("directory", "Directory with files to rename. Uses current working directory by default.");
 
             // Options
             cli.HelpOption("-? | -h | --help", inherited: true);
             //var confirmOpt = cli.Option("--confirm", "Confirm before committing changes.", CommandOptionType.NoValue);
-            var dryRunOpt = cli.Option("--dry-run", "Dry Run. Print changes, but do not apply them.", CommandOptionType.NoValue);
-            var filterOpt = cli.Option("--filter <SEARCHPATTERN>", "Filter the files to operate on.", CommandOptionType.SingleValue);
-            var modExtOpt = cli.Option("--include-ext", "Include file extension in renaming. They are excluded by default.", CommandOptionType.NoValue);
-            var interAcOpt = cli.Option("-i|--interactive", "Interactive mode. Will open a text file to further modify file names before committing the new names.", CommandOptionType.NoValue);
-            var prependOpt = cli.Option("-p|--prepend <TXT>", "Prepend text to each file name.", CommandOptionType.SingleValue);
-            var printOpt = cli.Option("--print", "Print results to console.", CommandOptionType.NoValue);
-            var replaceOpt = cli.Option("-r|--replace <TXT>", "Replace text in file name. Can be used multiple times.", CommandOptionType.MultipleValue);
-            var repWithOpt = cli.Option("-rw|--replace-with <TXT>", "Text to replace with. Must be used when using --replace option.", CommandOptionType.SingleOrNoValue);
-            var titCaseOpt = cli.Option("-t|--title-case", "Capitalize the first letter of every word.", CommandOptionType.NoValue);
+            var interactiveOption = cli.Option("-i|--interactive",
+                "Interactive mode. Before committing file name changes, " +
+                "further modify the calculated new file names in a text editor.",
+                CommandOptionType.NoValue);
+            var prependOption = cli.Option("-p|--prepend <TXT>",
+                "Prepend text to each file name. If specified text already exists " +
+                "at the start of a file name, it will not be additionally prepended.", CommandOptionType.SingleValue);
+            var replaceOption = cli.Option("-r|--replace <TXT>",
+                "Replace the specified text in file name. " +
+                "Can be used multiple times to specify multiple text values to replace.", CommandOptionType.MultipleValue);
+            var replaceWithOption = cli.Option("-rw|--replace-with <TXT>",
+                "Text to replace with. Required when using --replace option.",
+                CommandOptionType.SingleOrNoValue);
+            var titleCaseOption = cli.Option("-t|--title-case",
+                "Capitalize the first letter of every word.",
+                CommandOptionType.NoValue);
+            var dryRunOption = cli.Option("--dry",
+                "Dry Run. Will not make any changes.",
+                CommandOptionType.NoValue);
+            var filterOption = cli.Option("--filter <SEARCHPATTERN>",
+                "Filter the files to rename. Selects all files in specified directory by default.",
+                CommandOptionType.SingleValue);
+            var modifyExtensionsOption = cli.Option(
+                "--include-ext",
+                "Include file extension in renaming. They are excluded by default.", CommandOptionType.NoValue);
+            var verboseOption = cli.Option("--verbose",
+                "Be verbose.",
+                CommandOptionType.NoValue);
 
             var undo = cli.Command("undo", cmd =>
             {
@@ -55,37 +74,53 @@ namespace RenameX
             cli.OnExecute(() =>
             {
                 // If working directory is not specified, use the current directory
-                var dir = new DirectoryInfo(dirArg.Value?.Trim('"') ?? Environment.CurrentDirectory);
+                var workingDir = new DirectoryInfo(dirArg.Value?.Trim('"') ?? Environment.CurrentDirectory);
 
-                // Verify the working directory exists
-                if (!dir.Exists)
+                var settings = new RenameSettings(
+                    workingDir.FullName,
+                    filterOption.HasValue() ? filterOption.Value() : null,
+                    replaceOption.HasValue() ? replaceOption.Values : null,
+                    replaceWithOption.HasValue() ? replaceWithOption.Value() : null,
+                    prependOption.HasValue() ? prependOption.Value() : null,
+                    titleCaseOption.HasValue(),
+                    interactiveOption.HasValue(),
+                    modifyExtensionsOption.HasValue(),
+                    verboseOption.HasValue(),
+                    dryRunOption.HasValue()
+                );
+
+                // Verify settings
+                if (!settings.Validate(out var errors))
                 {
-                    CConsole.ErrorLine($"Directory \"{dir.FullName}\" does not exist.");
+                    foreach (var error in errors)
+                    {
+                        CConsole.ErrorLine(error);
+                    }
                     return 1;
                 }
 
                 // Print working directory
                 CConsole.Info("Working directory: ");
-                CConsole.WriteLine(dir.FullName);
+                CConsole.WriteLine(workingDir.FullName);
 
                 var rules = new List<IRenamingRule>();
 
-                if (replaceOpt.HasValue())
+                if (settings.ReplaceTexts?.Any() == true)
                 {
-                    if (repWithOpt.HasValue() == false)
+                    if (settings.ReplaceWithText == null)
                     {
                         CConsole.ErrorLine("Missing --replace-with option.");
                         return 1;
                     }
-                    rules.Add(new ReplaceTextRule(replaceOpt.Values!, repWithOpt.Value()!));
+                    rules.Add(new ReplaceTextRule(replaceOption.Values!, replaceWithOption.Value()!));
                 }
 
-                if (prependOpt.HasValue())
+                if (prependOption.HasValue())
                 {
-                    rules.Add(new PrependTextRule(prependOpt.Value()!));
+                    rules.Add(new PrependTextRule(prependOption.Value()!));
                 }
 
-                if (titCaseOpt.HasValue())
+                if (titleCaseOption.HasValue())
                 {
                     rules.Add(new TitleCaseRule(true));
                 }
@@ -102,12 +137,12 @@ namespace RenameX
                 int longestFileName = 0;
 
                 IEnumerable<FileInfo> enumeratedFiles;
-                if (filterOpt.HasValue())
-                    enumeratedFiles = dir.EnumerateFiles(filterOpt.Value()!, new EnumerationOptions() { IgnoreInaccessible = true });
+                if (filterOption.HasValue())
+                    enumeratedFiles = workingDir.EnumerateFiles(filterOption.Value()!, new EnumerationOptions() { IgnoreInaccessible = true });
                 else
-                    enumeratedFiles = dir.EnumerateFiles();
+                    enumeratedFiles = workingDir.EnumerateFiles();
 
-                foreach (var handler in enumeratedFiles.Select(f => new FileHandler(f, modExtOpt.HasValue())))
+                foreach (var handler in enumeratedFiles.Select(f => new FileHandler(f, modifyExtensionsOption.HasValue())))
                 {
                     handlers.Add(handler);
                     handler.ApplyOptions(rules);
@@ -118,7 +153,7 @@ namespace RenameX
                 Func<string, string, string> getOldAndNewName = (oldName, newName) => $"{oldName.PadRight(longestFileName)} => {newName}";
 
 
-                if (interAcOpt.HasValue())
+                if (interactiveOption.HasValue())
                 {
                     var tmpFile = Path.GetTempFileName();
                     File.Move(tmpFile, tmpFile + ".txt");
@@ -149,16 +184,17 @@ namespace RenameX
 
 
                 // If dry run
-                if (dryRunOpt.HasValue())
+                if (dryRunOption.HasValue())
                 {
                     foreach (var handler in handlers)
                     {
-                        Console.WriteLine(getOldAndNewName(handler.ExistingFile.Name, handler.NewName));
+                        if (verboseOption.HasValue())
+                            Console.WriteLine(getOldAndNewName(handler.ExistingFile.Name, handler.NewName));
                     }
                 }
                 else
                 {
-                    var history = new DirectoryHistory(dir.FullName).Load();
+                    var history = new DirectoryHistory(workingDir.FullName).Load();
                     var opLog = new OperationLog(DateTime.UtcNow);
 
                     foreach (var handler in handlers)
@@ -166,9 +202,9 @@ namespace RenameX
                         if (handler.ExistingFile.Name == handler.NewName)
                             continue;
 
-                        File.Move(handler.ExistingFile.FullName, dir.PathCombine(handler.NewName), overwrite: false);
+                        File.Move(handler.ExistingFile.FullName, workingDir.PathCombine(handler.NewName), overwrite: false);
                         opLog.Entries.Add(new OperationLogEntry(handler.ExistingFile.Name, handler.NewName));
-                        if (printOpt.HasValue())
+                        if (verboseOption.HasValue())
                             Console.WriteLine(getOldAndNewName(handler.ExistingFile.Name, handler.NewName));
                     }
 
