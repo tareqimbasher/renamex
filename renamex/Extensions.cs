@@ -21,7 +21,7 @@ namespace RenameX
 
         public static string GetHistoryFileName(this DirectoryInfo directoryInfo)
         {
-            return directoryInfo.FullName.RemoveInvalidPathChars("_") + ".json";
+            return directoryInfo.FullName.Trim('/').Trim('\\').RemoveInvalidPathChars("_") + ".json";
         }
 
         public static string RemoveInvalidPathChars(this string path, string replaceInvalidCharsWith)

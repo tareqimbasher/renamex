@@ -20,9 +20,9 @@ namespace RenameX.History
         private readonly FileInfo _historyFile;
 
 
-        public DirectoryHistory(string directoryPath)
+        public DirectoryHistory(DirectoryInfo directory)
         {
-            _directory = new DirectoryInfo(directoryPath);
+            _directory = directory;
             _historyFile = new FileInfo(Consts.AppDataDirectory.PathCombine(_directory.GetHistoryFileName()));
             Logs = new List<OperationLog>();
         }
@@ -38,7 +38,7 @@ namespace RenameX.History
             if (string.IsNullOrWhiteSpace(json))
                 json = "[]";
 
-            var logs = JsonSerializer.Deserialize<List<OperationLog>>(json);
+            var logs = JsonSerializer.Deserialize<List<OperationLog>>(json, _jsonOptions);
             if (logs == null)
                 throw new Exception("Could not deserialize operation logs");
 

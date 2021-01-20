@@ -53,7 +53,7 @@ namespace RenameX
                     longestFileName = handler.ExistingFile.Name.Length;
             }
 
-            Func<string, string, string> getOldAndNewName = (oldName, newName) => $"{oldName.PadRight(longestFileName)} => {newName}";
+            string getOldAndNewName(string oldName, string newName) => $"{oldName.PadRight(longestFileName)} => {newName}";
 
             if (Settings.InteractiveMode)
             {
@@ -94,7 +94,7 @@ namespace RenameX
             }
             else
             {
-                var history = new DirectoryHistory(workingDir.FullName).Load();
+                var history = new DirectoryHistory(workingDir).Load();
                 var opLog = new OperationLog(DateTime.UtcNow);
 
                 foreach (var handler in handlers)

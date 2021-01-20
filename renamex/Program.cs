@@ -57,7 +57,7 @@ namespace RenameX
             var modifyExtensionsOption = cli.Option(
                 "--include-ext",
                 "Include file extension in renaming. They are excluded by default.", CommandOptionType.NoValue);
-            var verboseOption = cli.Option("--verbose",
+            var verboseOption = cli.Option("-v|--verbose",
                 "Be verbose.",
                 CommandOptionType.NoValue);
 
@@ -69,15 +69,35 @@ namespace RenameX
             var history = cli.Command("history", cmd =>
             {
                 cmd.Description = "Print history of rename operations in the specified directory.";
+                cmd.Arguments.Add(dirArg);
+
+                cmd.OnExecute(() =>
+                {
+                    var workingDir = GetWorkingDirectory(dirArg);
+
+                    CConsole.Info("Working directory: ");
+                    CConsole.WriteLine(workingDir.FullName);
+
+                    var history = new DirectoryHistory(workingDir).Load();
+
+                    foreach (var log in history.Logs)
+                    {
+                        CConsole.InfoLine($"Date (UTC): {log.DateUtc}");
+                        var longestName = log.Entries.Max(x => x.OldName.Length);
+                        int count = 0;
+                        int numPadding = log.Entries.Count.ToString().Length;
+                        foreach (var entry in log.Entries)
+                        {
+                            CConsole.SuccessLine($"  {(++count).ToString().PadLeft(numPadding)}. {entry.OldName.PadRight(longestName)} => {entry.NewName}");
+                        }
+                    }
+                });
             });
 
             cli.OnExecute(() =>
             {
-                // If working directory is not specified, use the current directory
-                var workingDir = new DirectoryInfo(dirArg.Value?.Trim('"') ?? Environment.CurrentDirectory);
-
                 var settings = new RenameSettings(
-                    workingDir.FullName,
+                    GetWorkingDirectory(dirArg),
                     filterOption.HasValue() ? filterOption.Value() : null,
                     replaceOption.HasValue() ? replaceOption.Values : null,
                     replaceWithOption.HasValue() ? replaceWithOption.Value() : null,
@@ -86,7 +106,7 @@ namespace RenameX
                     interactiveOption.HasValue(),
                     modifyExtensionsOption.HasValue(),
                     verboseOption.HasValue(),
-                    dryRunOption.HasValue()
+                    dryRunOption.HasValue() || args.Contains("--dry")
                 );
 
                 // Verify settings
@@ -99,130 +119,8 @@ namespace RenameX
                     return 1;
                 }
 
-                // Print working directory
-                CConsole.Info("Working directory: ");
-                CConsole.WriteLine(workingDir.FullName);
-
-                var rules = new List<IRenamingRule>();
-
-                if (settings.ReplaceTexts?.Any() == true)
-                {
-                    if (settings.ReplaceWithText == null)
-                    {
-                        CConsole.ErrorLine("Missing --replace-with option.");
-                        return 1;
-                    }
-                    rules.Add(new ReplaceTextRule(replaceOption.Values!, replaceWithOption.Value()!));
-                }
-
-                if (prependOption.HasValue())
-                {
-                    rules.Add(new PrependTextRule(prependOption.Value()!));
-                }
-
-                if (titleCaseOption.HasValue())
-                {
-                    rules.Add(new TitleCaseRule(true));
-                }
-
-                // At least one renaming rule must have been specified
-                if (!rules.Any())
-                {
-                    CConsole.ErrorLine("No options specified.");
-                    return 1;
-                }
-
-
-                var handlers = new List<FileHandler>();
-                int longestFileName = 0;
-
-                IEnumerable<FileInfo> enumeratedFiles;
-                if (filterOption.HasValue())
-                    enumeratedFiles = workingDir.EnumerateFiles(filterOption.Value()!, new EnumerationOptions() { IgnoreInaccessible = true });
-                else
-                    enumeratedFiles = workingDir.EnumerateFiles();
-
-                foreach (var handler in enumeratedFiles.Select(f => new FileHandler(f, modifyExtensionsOption.HasValue())))
-                {
-                    handlers.Add(handler);
-                    handler.ApplyOptions(rules);
-                    if (handler.ExistingFile.Name.Length > longestFileName)
-                        longestFileName = handler.ExistingFile.Name.Length;
-                }
-
-                Func<string, string, string> getOldAndNewName = (oldName, newName) => $"{oldName.PadRight(longestFileName)} => {newName}";
-
-
-                if (interactiveOption.HasValue())
-                {
-                    var tmpFile = Path.GetTempFileName();
-                    File.Move(tmpFile, tmpFile + ".txt");
-                    tmpFile += ".txt";
-
-                    Console.WriteLine(tmpFile);
-
-                    File.WriteAllLines(
-                        tmpFile,
-                        handlers.Select(h => getOldAndNewName(h.ExistingFile.Name, h.NewName)).ToArray());
-
-                    Process.Start(new ProcessStartInfo(tmpFile) { UseShellExecute = true })?.WaitForExit();
-
-                    var editedNames = File.ReadAllLines(tmpFile).Select(l => l.Split("=>").Select(x => x.Trim()).ToArray()).ToArray();
-                    File.Delete(tmpFile);
-
-                    handlers = handlers.Where(h =>
-                    {
-                        var editedName = editedNames.FirstOrDefault(en => en[0] == h.ExistingFile.Name);
-                        if (editedName == null)
-                            return false;
-
-                        h.NewName = editedName[1];
-                        return true;
-                    })
-                    .ToList();
-                }
-
-
-                // If dry run
-                if (dryRunOption.HasValue())
-                {
-                    foreach (var handler in handlers)
-                    {
-                        if (verboseOption.HasValue())
-                            Console.WriteLine(getOldAndNewName(handler.ExistingFile.Name, handler.NewName));
-                    }
-                }
-                else
-                {
-                    var history = new DirectoryHistory(workingDir.FullName).Load();
-                    var opLog = new OperationLog(DateTime.UtcNow);
-
-                    foreach (var handler in handlers)
-                    {
-                        if (handler.ExistingFile.Name == handler.NewName)
-                            continue;
-
-                        File.Move(handler.ExistingFile.FullName, workingDir.PathCombine(handler.NewName), overwrite: false);
-                        opLog.Entries.Add(new OperationLogEntry(handler.ExistingFile.Name, handler.NewName));
-                        if (verboseOption.HasValue())
-                            Console.WriteLine(getOldAndNewName(handler.ExistingFile.Name, handler.NewName));
-                    }
-
-                    if (!opLog.Entries.Any())
-                    {
-                        CConsole.Info("No files were renamed!");
-                    }
-                    else
-                    {
-                        history.Logs.Add(opLog);
-                        history.Save();
-                    }
-
-                    return 0;
-                }
-
-
-                return 0;
+                var operation = new RenameOperation(settings);
+                return operation.Run() ? 0 : 1;
             });
 
             try
@@ -235,5 +133,9 @@ namespace RenameX
                 return 1;
             }
         }
+
+        private static DirectoryInfo GetWorkingDirectory(CommandArgument dirArg)
+               // If working directory is not specified, use the current directory
+            => new DirectoryInfo(dirArg.Value?.Trim('"') ?? Environment.CurrentDirectory);
     }
 }

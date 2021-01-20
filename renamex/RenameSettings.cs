@@ -11,7 +11,7 @@ namespace RenameX
     public class RenameSettings
     {
         public RenameSettings(
-            string workingDirectoryPath,
+            DirectoryInfo workingDirectory,
             string? filter,
             List<string?>? replaceTexts,
             string? replaceWithText,
@@ -23,7 +23,7 @@ namespace RenameX
             bool dryRun
         )
         {
-            Directory = new DirectoryInfo(workingDirectoryPath);
+            Directory = workingDirectory;
             Filter = filter;
             ReplaceTexts = replaceTexts;
             ReplaceWithText = replaceWithText;
