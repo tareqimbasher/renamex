@@ -1,8 +1,7 @@
 {
   "profiles": {
     "RenameX": {
-      "commandName": "Project",
-      "commandLineArgs": "-p \"TIPS - \" -r renamex -rw RenameX -t --dry-run -i"
+      "commandName": "Project"
     }
   }
 }

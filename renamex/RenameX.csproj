@@ -5,6 +5,11 @@
     <TargetFramework>net5.0</TargetFramework>
     <Nullable>enable</Nullable>
     <AssemblyName>renamex</AssemblyName>
+    <ApplicationIcon>Terminal.ico</ApplicationIcon>
+    <Authors>Tareq Imbasher</Authors>
+    <Company>Meccasoft</Company>
+    <Description>File renaming utility.</Description>
+    <PackageTags>rename,utility,util</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

@@ -80,6 +80,9 @@ namespace RenameX
 
                     var history = new DirectoryHistory(workingDir).Load();
 
+                    if (!history.Logs.Any())
+                        CConsole.Success("No history!");
+
                     foreach (var log in history.Logs)
                     {
                         CConsole.InfoLine($"Date (UTC): {log.DateUtc}");
