@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RenameX", "renamex\RenameX.csproj", "{EB6C02BD-D5E3-47B1-8830-40000F9E7A0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RenameX", "RenameX\RenameX.csproj", "{EB6C02BD-D5E3-47B1-8830-40000F9E7A0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
