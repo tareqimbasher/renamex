@@ -16,7 +16,7 @@ namespace RenameX
             ModifyExtension = modifyExtension;
         }
 
-        public FileInfo ExistingFile { get; }
+        private FileInfo ExistingFile { get; }
         public string OldName => ExistingFile.Name;
         public bool ModifyExtension { get; }
         public string NewName { get; set; }
@@ -32,5 +32,8 @@ namespace RenameX
 
             NewName = ModifyExtension ? nameToModify : (nameToModify + ExistingFile.Extension);
         }
+
+        public string GetOldToNewNameString(int oldNamePadding = 0)
+            => $"{OldName.PadRight(oldNamePadding)} => {NewName}";
     }
 }

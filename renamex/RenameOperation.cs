@@ -49,11 +49,9 @@ namespace RenameX
             {
                 handlers.Add(handler);
                 handler.ApplyOptions(rules);
-                if (handler.ExistingFile.Name.Length > longestFileName)
-                    longestFileName = handler.ExistingFile.Name.Length;
+                if (handler.OldName.Length > longestFileName)
+                    longestFileName = handler.OldName.Length;
             }
-
-            string getOldAndNewName(string oldName, string newName) => $"{oldName.PadRight(longestFileName)} => {newName}";
 
             if (Settings.InteractiveMode)
             {
@@ -63,7 +61,9 @@ namespace RenameX
 
                 File.WriteAllLines(
                     tmpFile,
-                    handlers.Select(h => getOldAndNewName(h.ExistingFile.Name, h.NewName)).ToArray());
+                    handlers.Select(h => h.GetOldToNewNameString(longestFileName)).ToArray());
+
+                CConsole.InfoLine("Waiting for text editor to close...");
 
                 Process.Start(new ProcessStartInfo(tmpFile) { UseShellExecute = true })?.WaitForExit();
 
@@ -72,7 +72,7 @@ namespace RenameX
 
                 handlers = handlers.Where(h =>
                 {
-                    var editedName = editedNames.FirstOrDefault(en => en[0] == h.ExistingFile.Name);
+                    var editedName = editedNames.FirstOrDefault(en => en[0] == h.OldName);
                     if (editedName == null)
                         return false;
 
@@ -82,30 +82,64 @@ namespace RenameX
                 .ToList();
             }
 
+            // Filter out files where the name hasn't changed
+            handlers = handlers.Where(h => h.OldName != h.NewName).ToList();
+
+            if (!handlers.Any())
+            {
+                CConsole.Info("No files were renamed!");
+                return true;
+            }
 
             // If dry run
             if (Settings.DryRun)
             {
-                foreach (var handler in handlers)
+                if (Settings.Verbose)
                 {
-                    if (Settings.Verbose)
-                        Console.WriteLine(getOldAndNewName(handler.ExistingFile.Name, handler.NewName));
+                    foreach (var handler in handlers)
+                    {
+                        CConsole.SuccessLine($"[DRYRUN] {handler.GetOldToNewNameString(longestFileName)}");
+                    }
                 }
             }
             else
             {
+                if (Settings.InteractiveMode)
+                {
+                    CConsole.Info($"\nThis will rename {handlers.Count} files. Are you sure you want to continue? [y/N]: ");
+                    if (Console.ReadLine()?.ToLower() != "y")
+                    {
+                        CConsole.WarningLine("Cancelled.");
+                        return false;
+                    }
+                }
+
                 var history = new DirectoryHistory(workingDir).Load();
                 var opLog = new OperationLog(DateTime.UtcNow);
 
                 foreach (var handler in handlers)
                 {
-                    if (handler.ExistingFile.Name == handler.NewName)
+                    // If name has not changed, skip it
+                    if (handler.OldName == handler.NewName)
                         continue;
 
-                    File.Move(handler.ExistingFile.FullName, workingDir.PathCombine(handler.NewName), overwrite: false);
-                    opLog.Entries.Add(new OperationLogEntry(handler.ExistingFile.Name, handler.NewName));
+                    // Prevent overwriting existing files
+                    string newFilePath = workingDir.PathCombine(handler.NewName);
+                    if (File.Exists(newFilePath))
+                    {
+                        CConsole.Warning($"A file with name '{handler.NewName}' already exists. File will not be renamed.");
+                        continue;
+                    }
+
+                    // Perform actual rename
+                    File.Move(workingDir.PathCombine(handler.OldName), workingDir.PathCombine(handler.NewName), overwrite: false);
+
+                    // Register an operation log entry
+                    opLog.Entries.Add(new OperationLogEntry(handler.OldName, handler.NewName));
+
+                    // If verbose, print the rename that took place
                     if (Settings.Verbose)
-                        Console.WriteLine(getOldAndNewName(handler.ExistingFile.Name, handler.NewName));
+                        CConsole.SuccessLine($"[RENAMED] {handler.GetOldToNewNameString(longestFileName)}");
                 }
 
                 if (!opLog.Entries.Any())
@@ -118,7 +152,6 @@ namespace RenameX
                     history.Save();
                 }
             }
-
 
             return true;
         }

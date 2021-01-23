@@ -21,44 +21,46 @@ namespace RenameX
             var cli = new CommandLineApplication
             {
                 Name = "renamex",
-                Description = "File renaming utility.",
+                Description = "Bulk file renaming utility.",
                 UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect,
                 MakeSuggestionsInErrorMessage = true
             };
 
             // Arguments
-            var dirArg = cli.Argument("directory", "Directory with files to rename. Uses current working directory by default.");
+            var dirArg = cli.Argument("directory", "Directory with files to rename. If not specified, uses current working directory.");
 
             // Options
             cli.HelpOption("-? | -h | --help", inherited: true);
-            //var confirmOpt = cli.Option("--confirm", "Confirm before committing changes.", CommandOptionType.NoValue);
-            var interactiveOption = cli.Option("-i|--interactive",
-                "Interactive mode. Before committing file name changes, " +
-                "further modify the calculated new file names in a text editor.",
-                CommandOptionType.NoValue);
+            var filterOption = cli.Option("-f|--filter <SEARCHPATTERN>",
+                "Filter the files to rename. Selects all files in specified directory by default.",
+                CommandOptionType.SingleValue);
             var prependOption = cli.Option("-p|--prepend <TXT>",
                 "Prepend text to each file name. If specified text already exists " +
-                "at the start of a file name, it will not be additionally prepended.", CommandOptionType.SingleValue);
+                "at the start of a file name, it will not be additionally prepended.", 
+                CommandOptionType.SingleValue);
             var replaceOption = cli.Option("-r|--replace <TXT>",
                 "Replace the specified text in file name. " +
-                "Can be used multiple times to specify multiple text values to replace.", CommandOptionType.MultipleValue);
+                "Can be used multiple times to specify multiple text values to replace.", 
+                CommandOptionType.MultipleValue);
             var replaceWithOption = cli.Option("-rw|--replace-with <TXT>",
                 "Text to replace with. Required when using --replace option.",
                 CommandOptionType.SingleOrNoValue);
             var titleCaseOption = cli.Option("-t|--title-case",
                 "Capitalize the first letter of every word.",
                 CommandOptionType.NoValue);
-            var dryRunOption = cli.Option("--dry",
-                "Dry Run. Will not make any changes.",
+            var interactiveOption = cli.Option("-i|--interactive",
+                "Allows the command to stop and wait for user input or action (for example to confirm renaming)." +
+                "Also allows user to further modify the calculated new file names in a text editor.",
                 CommandOptionType.NoValue);
-            var filterOption = cli.Option("--filter <SEARCHPATTERN>",
-                "Filter the files to rename. Selects all files in specified directory by default.",
-                CommandOptionType.SingleValue);
+            var verboseOption = cli.Option("-v|--verbose",
+                "Prints file name changes.",
+                CommandOptionType.NoValue);
             var modifyExtensionsOption = cli.Option(
                 "--include-ext",
-                "Include file extension in renaming. They are excluded by default.", CommandOptionType.NoValue);
-            var verboseOption = cli.Option("-v|--verbose",
-                "Be verbose.",
+                "Include file extension in renaming. They are excluded by default.", 
+                CommandOptionType.NoValue);
+            var dryRunOption = cli.Option("--dry",
+                "Dry Run. Will not make any changes.",
                 CommandOptionType.NoValue);
 
             var undo = cli.Command("undo", cmd =>
@@ -85,7 +87,7 @@ namespace RenameX
 
                     foreach (var log in history.Logs)
                     {
-                        CConsole.InfoLine($"Date (UTC): {log.DateUtc}");
+                        CConsole.InfoLine($"Date: {log.DateUtc.ToLocalTime()}");
                         var longestName = log.Entries.Max(x => x.OldName.Length);
                         int count = 0;
                         int numPadding = log.Entries.Count.ToString().Length;
