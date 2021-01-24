@@ -1,9 +1,6 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 using RenameX.History;
-using RenameX.Options;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -36,11 +33,11 @@ namespace RenameX
                 CommandOptionType.SingleValue);
             var prependOption = cli.Option("-p|--prepend <TXT>",
                 "Prepend text to each file name. If specified text already exists " +
-                "at the start of a file name, it will not be additionally prepended.", 
+                "at the start of a file name, it will not be additionally prepended.",
                 CommandOptionType.SingleValue);
             var replaceOption = cli.Option("-r|--replace <TXT>",
                 "Replace the specified text in file name. " +
-                "Can be used multiple times to specify multiple text values to replace.", 
+                "Can be used multiple times to specify multiple text values to replace.",
                 CommandOptionType.MultipleValue);
             var replaceWithOption = cli.Option("-rw|--replace-with <TXT>",
                 "Text to replace with. Required when using --replace option.",
@@ -57,16 +54,15 @@ namespace RenameX
                 CommandOptionType.NoValue);
             var modifyExtensionsOption = cli.Option(
                 "--include-ext",
-                "Include file extension in renaming. They are excluded by default.", 
+                "Include file extension in renaming. They are excluded by default.",
+                CommandOptionType.NoValue);
+            var disableLoggingOption = cli.Option(
+                "--no-log",
+                "Disables logging rename in history log.",
                 CommandOptionType.NoValue);
             var dryRunOption = cli.Option("--dry",
                 "Dry Run. Will not make any changes.",
                 CommandOptionType.NoValue);
-
-            var undo = cli.Command("undo", cmd =>
-            {
-                cmd.Description = "Undo the last rename operation.";
-            });
 
             var history = cli.Command("history", cmd =>
             {
@@ -99,6 +95,40 @@ namespace RenameX
                 });
             });
 
+            var undo = cli.Command("undo", cmd =>
+            {
+                cmd.Description = "Undo the last rename operation.";
+                cmd.Arguments.Add(dirArg);
+                cmd.Options.Add(interactiveOption);
+                cmd.Options.Add(verboseOption);
+                cmd.Options.Add(disableLoggingOption);
+                cmd.Options.Add(dryRunOption);
+
+                cmd.OnExecute(() =>
+                {
+                    var workingDir = GetWorkingDirectory(dirArg);
+
+                    CConsole.Info("Working directory: ");
+                    CConsole.WriteLine(workingDir.FullName);
+
+                    var history = new DirectoryHistory(workingDir).Load();
+
+                    if (!history.Logs.Any())
+                    {
+                        CConsole.Success("No history!");
+                        return 1;
+                    }
+
+                    var lastRenameOp = history.Logs.OrderBy(x => x.DateUtc).Last();
+                    foreach (var entry in lastRenameOp.Entries)
+                    {
+                        if (File.Exists(workingDir.PathCombine(entry.NewName)))
+                            File.Move(workingDir.PathCombine(entry.NewName), workingDir.PathCombine(entry.OldName));
+                    }
+                    return 0;
+                });
+            });
+
             cli.OnExecute(() =>
             {
                 var settings = new RenameSettings(
@@ -111,7 +141,8 @@ namespace RenameX
                     interactiveOption.HasValue(),
                     modifyExtensionsOption.HasValue(),
                     verboseOption.HasValue(),
-                    dryRunOption.HasValue() || args.Contains("--dry")
+                    dryRunOption.HasValue() || args.Contains("--dry"),
+                    disableLoggingOption.HasValue()
                 );
 
                 // Verify settings
@@ -140,7 +171,7 @@ namespace RenameX
         }
 
         private static DirectoryInfo GetWorkingDirectory(CommandArgument dirArg)
-               // If working directory is not specified, use the current directory
+            // If working directory is not specified, use the current directory
             => new DirectoryInfo(dirArg.Value?.Trim('"') ?? Environment.CurrentDirectory);
     }
 }

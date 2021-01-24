@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace RenameX
 {
+    /// <summary>
+    /// A colored console.
+    /// </summary>
     public static class CConsole
     {
         public static void Write(string text) => Write(text, Console.ForegroundColor);
@@ -17,6 +20,7 @@ namespace RenameX
             Console.Write(text);
             Console.ForegroundColor = current;
         }
+
         public static void WriteLine(string text) => Write(text + "\n", Console.ForegroundColor);
         public static void WriteLine(string text, ConsoleColor consoleColor) => Write(text + "\n", consoleColor);
 

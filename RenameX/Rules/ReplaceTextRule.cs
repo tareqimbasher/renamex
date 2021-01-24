@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace RenameX.Options
+namespace RenameX.Rules
 {
     public class ReplaceTextRule : IRenamingRule
     {

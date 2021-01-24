@@ -1,4 +1,4 @@
-﻿namespace RenameX.Options
+﻿namespace RenameX.Rules
 {
     public interface IRenamingRule
     {

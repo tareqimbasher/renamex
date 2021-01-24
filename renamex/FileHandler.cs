@@ -1,36 +1,33 @@
-﻿using RenameX.Options;
-using System;
+﻿using RenameX.Rules;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RenameX
 {
     public class FileHandler
     {
+        private readonly FileInfo _existingFile;
+
         public FileHandler(FileInfo existingFile, bool modifyExtension)
         {
-            ExistingFile = existingFile;
+            _existingFile = existingFile;
             ModifyExtension = modifyExtension;
         }
 
-        private FileInfo ExistingFile { get; }
-        public string OldName => ExistingFile.Name;
+        public string OldName => _existingFile.Name;
         public bool ModifyExtension { get; }
         public string NewName { get; set; }
 
-        public void ApplyOptions(IEnumerable<IRenamingRule> rules)
+        public void ApplyRules(IEnumerable<IRenamingRule> rules)
         {
-            var nameToModify = ModifyExtension ? ExistingFile.Name : Path.GetFileNameWithoutExtension(ExistingFile.Name);
+            var nameToModify = ModifyExtension ? OldName : Path.GetFileNameWithoutExtension(OldName);
 
             foreach (var rule in rules)
             {
                 nameToModify = rule.Apply(nameToModify);
             }
 
-            NewName = ModifyExtension ? nameToModify : (nameToModify + ExistingFile.Extension);
+            NewName = ModifyExtension ? nameToModify : (nameToModify + _existingFile.Extension);
         }
 
         public string GetOldToNewNameString(int oldNamePadding = 0)

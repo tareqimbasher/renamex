@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RenameX
 {
@@ -48,7 +46,7 @@ namespace RenameX
             foreach (var handler in enumeratedFiles.Select(f => new FileHandler(f, Settings.ModifyExtensions)))
             {
                 handlers.Add(handler);
-                handler.ApplyOptions(rules);
+                handler.ApplyRules(rules);
                 if (handler.OldName.Length > longestFileName)
                     longestFileName = handler.OldName.Length;
             }
@@ -146,7 +144,7 @@ namespace RenameX
                 {
                     CConsole.Info("No files were renamed!");
                 }
-                else
+                else if (!Settings.DisableHistoryLog)
                 {
                     history.Logs.Add(opLog);
                     history.Save();

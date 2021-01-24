@@ -1,10 +1,7 @@
-﻿using RenameX.Options;
-using System;
+﻿using RenameX.Rules;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RenameX
 {
@@ -20,7 +17,8 @@ namespace RenameX
             bool interactiveMode,
             bool modifyExtensions,
             bool verbose,
-            bool dryRun
+            bool dryRun,
+            bool disableHistoryLog
         )
         {
             Directory = workingDirectory;
@@ -33,6 +31,7 @@ namespace RenameX
             ModifyExtensions = modifyExtensions;
             Verbose = verbose;
             DryRun = dryRun;
+            DisableHistoryLog = disableHistoryLog;
         }
 
         public DirectoryInfo Directory { get; }
@@ -45,6 +44,7 @@ namespace RenameX
         public bool ModifyExtensions { get; }
         public bool Verbose { get; }
         public bool DryRun { get; }
+        public bool DisableHistoryLog { get; }
 
         public bool Validate(out List<string> errors)
         {
