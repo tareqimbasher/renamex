@@ -1,13 +1,13 @@
-﻿using RenameX.Rules;
+﻿using RenameX.RenamingStrategies;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace RenameX
 {
-    public class RenameSettings
+    public class Settings
     {
-        public RenameSettings(
+        public Settings(
             DirectoryInfo workingDirectory,
             string? filter,
             List<string?>? replaceTexts,
@@ -74,23 +74,23 @@ namespace RenameX
             return true;
         }
 
-        public IEnumerable<IRenamingRule> GenerateRenamingRules()
+        public IEnumerable<IRenamingStrategy> GenerateRenamingStrategies()
         {
-            var rules = new List<IRenamingRule>();
+            var rules = new List<IRenamingStrategy>();
 
-            if (ReplaceTexts?.Any() == true)
+            if (ReplaceTexts != null && ReplaceTexts.Any())
             {
-                rules.Add(new ReplaceTextRule(ReplaceTexts!, ReplaceWithText!));
+                rules.Add(new ReplaceTextStrategy(ReplaceTexts, ReplaceWithText));
             }
 
             if (PrependText != null)
             {
-                rules.Add(new PrependTextRule(PrependText));
+                rules.Add(new PrependTextStrategy(PrependText));
             }
 
             if (TitleCase)
             {
-                rules.Add(new TitleCaseRule(true));
+                rules.Add(new TitleCaseStrategy(true));
             }
 
             return rules;

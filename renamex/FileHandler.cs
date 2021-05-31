@@ -1,4 +1,5 @@
-﻿using RenameX.Rules;
+﻿using RenameX.RenamingStrategies;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -12,22 +13,59 @@ namespace RenameX
         {
             _existingFile = existingFile;
             ModifyExtension = modifyExtension;
+            NewName = OldName;
         }
 
         public string OldName => _existingFile.Name;
         public bool ModifyExtension { get; }
-        public string NewName { get; set; }
+        public string NewName { get; private set; }
 
-        public void ApplyRules(IEnumerable<IRenamingRule> rules)
+        public bool NewNameDiffersFromOld => NewName != OldName;
+
+        public void Apply(IEnumerable<IRenamingStrategy> strategies)
         {
             var nameToModify = ModifyExtension ? OldName : Path.GetFileNameWithoutExtension(OldName);
 
-            foreach (var rule in rules)
+            foreach (var strategy in strategies)
             {
-                nameToModify = rule.Apply(nameToModify);
+                nameToModify = strategy.TransformName(nameToModify);
             }
 
             NewName = ModifyExtension ? nameToModify : (nameToModify + _existingFile.Extension);
+        }
+
+        public void DirectlyUpdateNewName(string newName)
+        {
+            NewName = newName;
+        }
+
+        public FileCommitResult Commit()
+        {
+            if (!NewNameDiffersFromOld)
+                return FileCommitResult.NameUnchanged;
+
+            DirectoryInfo workingDir = _existingFile.Directory;
+            string newFilePath = workingDir.PathCombine(NewName);
+
+            // Prevent overwriting existing files
+            if (File.Exists(newFilePath))
+            {
+                CConsole.Warning($"A file with name '{NewName}' already exists. File will not be renamed.");
+                return FileCommitResult.FileAlreadyExists;
+            }
+
+            // Perform actual rename
+            try
+            {
+                File.Move(workingDir.PathCombine(OldName), workingDir.PathCombine(NewName), overwrite: false);
+            }
+            catch (Exception ex)
+            {
+                CConsole.Error($"Error renaming file: {OldName}. {ex.Message}");
+                return FileCommitResult.Error;
+            }
+
+            return FileCommitResult.Success;
         }
 
         public string GetOldToNewNameString(int oldNamePadding = 0)

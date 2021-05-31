@@ -28,42 +28,53 @@ namespace RenameX
 
             // Options
             cli.HelpOption("-? | -h | --help", inherited: true);
+
             var filterOption = cli.Option("-f|--filter <SEARCHPATTERN>",
                 "Filter the files to rename. Selects all files in specified directory by default.",
                 CommandOptionType.SingleValue);
+
             var prependOption = cli.Option("-p|--prepend <TXT>",
                 "Prepend text to each file name. If specified text already exists " +
                 "at the start of a file name, it will not be additionally prepended.",
                 CommandOptionType.SingleValue);
+
             var replaceOption = cli.Option("-r|--replace <TXT>",
                 "Replace the specified text in file name. " +
                 "Can be used multiple times to specify multiple text values to replace.",
                 CommandOptionType.MultipleValue);
+
             var replaceWithOption = cli.Option("-rw|--replace-with <TXT>",
                 "Text to replace with. Required when using --replace option.",
                 CommandOptionType.SingleOrNoValue);
+
             var titleCaseOption = cli.Option("-t|--title-case",
                 "Capitalize the first letter of every word.",
                 CommandOptionType.NoValue);
+
             var interactiveOption = cli.Option("-i|--interactive",
                 "Allows the command to stop and wait for user input or action (for example to confirm renaming)." +
                 "Also allows user to further modify the calculated new file names in a text editor.",
                 CommandOptionType.NoValue);
+
             var verboseOption = cli.Option("-v|--verbose",
                 "Prints file name changes.",
                 CommandOptionType.NoValue);
+
             var modifyExtensionsOption = cli.Option(
                 "--include-ext",
                 "Include file extension in renaming. They are excluded by default.",
                 CommandOptionType.NoValue);
+
             var disableLoggingOption = cli.Option(
                 "--no-log",
                 "Disables logging rename in history log.",
                 CommandOptionType.NoValue);
+
             var dryRunOption = cli.Option("--dry",
                 "Dry Run. Will not make any changes.",
                 CommandOptionType.NoValue);
 
+            // Commands
             var history = cli.Command("history", cmd =>
             {
                 cmd.Description = "Print history of rename operations in the specified directory.";
@@ -131,7 +142,7 @@ namespace RenameX
 
             cli.OnExecute(() =>
             {
-                var settings = new RenameSettings(
+                var settings = new Settings(
                     GetWorkingDirectory(dirArg),
                     filterOption.HasValue() ? filterOption.Value() : null,
                     replaceOption.HasValue() ? replaceOption.Values : null,
