@@ -1,6 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.IO;
+﻿using System.Globalization;
 
 namespace RenameX.RenamingStrategies
 {
@@ -13,33 +11,13 @@ namespace RenameX.RenamingStrategies
 
         public bool ConvertToTitleCase { get; set; }
 
-        public string TransformName(string name)
+        public string? TransformName(string? name)
         {
-            if (!ConvertToTitleCase)
+            if (!ConvertToTitleCase || string.IsNullOrWhiteSpace(name))
                 return name;
 
             TextInfo info = CultureInfo.CurrentCulture.TextInfo;
             return info.ToTitleCase(name);
         }
-
-
-        //public override void Apply(FileHandler file)
-        //{
-        //    if (ConvertToTitleCase)
-        //    {
-        //        file.Apply(name =>
-        //        {
-        //            var nameToModify = name;
-        //            var ext = Path.GetExtension(name);
-        //            if (Settings.ModifyExtensions == false)
-        //                nameToModify = Path.GetFileNameWithoutExtension(name);
-
-        //            TextInfo info = CultureInfo.CurrentCulture.TextInfo;
-        //            nameToModify = info.ToTitleCase(nameToModify);
-
-        //            return nameToModify + (Settings.ModifyExtensions ? "" : ext);
-        //        });
-        //    }
-        //}
     }
 }

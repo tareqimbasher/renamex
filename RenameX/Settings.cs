@@ -10,7 +10,7 @@ namespace RenameX
         public Settings(
             DirectoryInfo workingDirectory,
             string? filter,
-            List<string?>? replaceTexts,
+            IEnumerable<string?>? replaceTexts,
             string? replaceWithText,
             string? prependText,
             bool titleCase,
@@ -23,7 +23,7 @@ namespace RenameX
         {
             Directory = workingDirectory;
             Filter = filter;
-            ReplaceTexts = replaceTexts;
+            ReplaceTexts = replaceTexts?.ToArray() ?? new string?[0];
             ReplaceWithText = replaceWithText;
             PrependText = prependText;
             TitleCase = titleCase;
@@ -36,7 +36,7 @@ namespace RenameX
 
         public DirectoryInfo Directory { get; }
         public string? Filter { get; }
-        public List<string?>? ReplaceTexts { get; }
+        public string?[] ReplaceTexts { get; }
         public string? ReplaceWithText { get; }
         public string? PrependText { get; }
         public bool TitleCase { get; }
@@ -56,9 +56,15 @@ namespace RenameX
                 return false;
             }
 
-            if (ReplaceTexts?.Any() == true && ReplaceWithText == null)
+            if (ReplaceTexts.Any() && ReplaceWithText == null)
             {
                 errors.Add("Missing --replace-with option.");
+                return false;
+            }
+
+            if (ReplaceWithText != null && !ReplaceTexts.Any())
+            {
+                errors.Add("Missing --replace option.");
                 return false;
             }
 
@@ -78,12 +84,12 @@ namespace RenameX
         {
             var rules = new List<IRenamingStrategy>();
 
-            if (ReplaceTexts != null && ReplaceTexts.Any())
+            if (ReplaceTexts.Any())
             {
                 rules.Add(new ReplaceTextStrategy(ReplaceTexts, ReplaceWithText));
             }
 
-            if (PrependText != null)
+            if (!string.IsNullOrEmpty(PrependText))
             {
                 rules.Add(new PrependTextStrategy(PrependText));
             }

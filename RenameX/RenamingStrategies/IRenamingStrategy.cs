@@ -2,6 +2,6 @@
 {
     public interface IRenamingStrategy
     {
-        string TransformName(string name);
+        string? TransformName(string? name);
     }
 }

@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RenameX", "RenameX\RenameX.csproj", "{EB6C02BD-D5E3-47B1-8830-40000F9E7A0A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenameX.Tests", "RenameX.Tests\RenameX.Tests.csproj", "{6C3F7FE9-947E-494C-ABFB-065DFADA6E56}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{EB6C02BD-D5E3-47B1-8830-40000F9E7A0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB6C02BD-D5E3-47B1-8830-40000F9E7A0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB6C02BD-D5E3-47B1-8830-40000F9E7A0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C3F7FE9-947E-494C-ABFB-065DFADA6E56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C3F7FE9-947E-494C-ABFB-065DFADA6E56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C3F7FE9-947E-494C-ABFB-065DFADA6E56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C3F7FE9-947E-494C-ABFB-065DFADA6E56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

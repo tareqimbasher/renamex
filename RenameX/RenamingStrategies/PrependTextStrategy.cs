@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace RenameX.RenamingStrategies
+﻿namespace RenameX.RenamingStrategies
 {
     public class PrependTextStrategy : IRenamingStrategy
     {
@@ -11,23 +9,15 @@ namespace RenameX.RenamingStrategies
 
         public string? TextToPrepend { get; set; }
 
-        public string TransformName(string name)
+        public string? TransformName(string? name)
         {
             if (string.IsNullOrEmpty(TextToPrepend))
                 return name;
 
+            if (name == null)
+                name = string.Empty;
+
             return name.StartsWith(TextToPrepend) ? name : (TextToPrepend + name);
         }
-
-        //public override void Apply(FileHandler file)
-        //{
-        //    if (TextToPrepend == null)
-        //        return;
-
-        //    if (!file.OldName.StartsWith(TextToPrepend))
-        //    {
-        //        file.Apply(name => TextToPrepend + name);
-        //    }
-        //}
     }
 }
