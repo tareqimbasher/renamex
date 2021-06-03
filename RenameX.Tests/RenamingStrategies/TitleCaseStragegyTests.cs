@@ -1,5 +1,4 @@
 ﻿using RenameX.RenamingStrategies;
-using System;
 using Xunit;
 
 namespace RenameX.Tests.RenamingStrategies

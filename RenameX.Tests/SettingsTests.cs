@@ -7,10 +7,6 @@ using Xunit;
 
 namespace RenameX.Tests
 {
-    //    <PackageReference Include="coverlet.collector" Version="1.3.0">
-    //  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    //  <PrivateAssets>all</PrivateAssets>
-    //</PackageReference>
     public class SettingsTests
     {
         [Fact]

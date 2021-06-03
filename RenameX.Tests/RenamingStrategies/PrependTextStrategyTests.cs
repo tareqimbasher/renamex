@@ -1,5 +1,4 @@
 ﻿using RenameX.RenamingStrategies;
-using System;
 using Xunit;
 
 namespace RenameX.Tests.RenamingStrategies
@@ -27,7 +26,7 @@ namespace RenameX.Tests.RenamingStrategies
 
             Assert.Equal(oldName, newName);
         }
-        
+
         [Fact]
         public void TextToPrependIsNotNull_OldNameIsNull_OldNameShouldEqualPrependText()
         {

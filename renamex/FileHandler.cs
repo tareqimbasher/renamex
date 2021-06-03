@@ -1,4 +1,5 @@
-﻿using RenameX.RenamingStrategies;
+﻿using RenameX.FileSystem;
+using RenameX.RenamingStrategies;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,10 +8,12 @@ namespace RenameX
 {
     public class FileHandler
     {
+        private readonly IFileSystem _fileSystem;
         private readonly FileInfo _existingFile;
 
-        public FileHandler(FileInfo existingFile, bool modifyExtension)
+        public FileHandler(IFileSystem fileSystem, FileInfo existingFile, bool modifyExtension)
         {
+            _fileSystem = fileSystem;
             _existingFile = existingFile;
             ModifyExtension = modifyExtension;
             NewName = OldName;
@@ -24,7 +27,7 @@ namespace RenameX
 
         public void Apply(IEnumerable<IRenamingStrategy> strategies)
         {
-            var nameToModify = ModifyExtension ? OldName : Path.GetFileNameWithoutExtension(OldName);
+            var nameToModify = ModifyExtension ? OldName : _fileSystem.Path.GetFileNameWithoutExtension(OldName);
 
             foreach (var strategy in strategies)
             {
@@ -48,7 +51,7 @@ namespace RenameX
             string newFilePath = workingDir.PathCombine(NewName);
 
             // Prevent overwriting existing files
-            if (File.Exists(newFilePath))
+            if (_fileSystem.File.Exists(newFilePath))
             {
                 CConsole.Warning($"A file with name '{NewName}' already exists. File will not be renamed.");
                 return FileCommitResult.FileAlreadyExists;
@@ -57,7 +60,7 @@ namespace RenameX
             // Perform actual rename
             try
             {
-                File.Move(workingDir.PathCombine(OldName), workingDir.PathCombine(NewName), overwrite: false);
+                _fileSystem.File.Move(workingDir.PathCombine(OldName), workingDir.PathCombine(NewName), overwrite: false);
             }
             catch (Exception ex)
             {

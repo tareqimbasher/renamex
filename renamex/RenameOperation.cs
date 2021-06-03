@@ -1,4 +1,5 @@
-﻿using RenameX.History;
+﻿using RenameX.FileSystem;
+using RenameX.History;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,8 +10,11 @@ namespace RenameX
 {
     public class RenameOperation
     {
-        public RenameOperation(Settings settings)
+        private readonly IFileSystem _fileSystem;
+
+        public RenameOperation(IFileSystem fileSystem, Settings settings)
         {
+            _fileSystem = fileSystem;
             Settings = settings;
         }
 
@@ -40,7 +44,7 @@ namespace RenameX
             var handlers = new List<FileHandler>();
             int longestFileName = 0;
 
-            foreach (var handler in filesToRename.Select(f => new FileHandler(f, Settings.ModifyExtensions)))
+            foreach (var handler in filesToRename.Select(f => new FileHandler(_fileSystem, f, Settings.ModifyExtensions)))
             {
                 handlers.Add(handler);
 
@@ -52,11 +56,11 @@ namespace RenameX
 
             if (Settings.InteractiveMode)
             {
-                var tmpFile = Path.GetTempFileName();
-                File.Move(tmpFile, tmpFile + ".txt");
+                var tmpFile = _fileSystem.Path.GetTempFileName();
+                _fileSystem.File.Move(tmpFile, tmpFile + ".txt");
                 tmpFile += ".txt";
 
-                File.WriteAllLines(
+                _fileSystem.File.WriteAllLines(
                     tmpFile,
                     handlers.Select(h => h.GetOldToNewNameString(longestFileName)).ToArray());
 
@@ -64,8 +68,8 @@ namespace RenameX
 
                 Process.Start(new ProcessStartInfo(tmpFile) { UseShellExecute = true }).WaitForExit();
 
-                var editedNames = File.ReadAllLines(tmpFile).Select(l => l.Split("=>").Select(x => x.Trim()).ToArray()).ToArray();
-                File.Delete(tmpFile);
+                var editedNames = _fileSystem.File.ReadAllLines(tmpFile).Select(l => l.Split("=>").Select(x => x.Trim()).ToArray()).ToArray();
+                _fileSystem.File.Delete(tmpFile);
 
                 handlers = handlers.Where(h =>
                 {
@@ -111,7 +115,7 @@ namespace RenameX
                     }
                 }
 
-                var history = new DirectoryHistory(workingDir).Load();
+                var history = new DirectoryHistory(workingDir, _fileSystem).Load();
                 var opLog = new OperationLog(DateTime.UtcNow);
 
                 foreach (var handler in handlers)

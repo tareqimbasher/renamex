@@ -1,4 +1,5 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
+using RenameX.FileSystem;
 using RenameX.History;
 using System;
 using System.IO;
@@ -6,13 +7,15 @@ using System.Linq;
 
 namespace RenameX
 {
-    class Program
+    internal class Program
     {
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             // Ensure app data folder is created
             if (!Consts.AppDataDirectory.Exists)
                 Consts.AppDataDirectory.Create();
+
+            var fileSystem = new RealFileSystem();
 
             // Configure CLI app
             var cli = new CommandLineApplication
@@ -87,7 +90,7 @@ namespace RenameX
                     CConsole.Info("Working directory: ");
                     CConsole.WriteLine(workingDir.FullName);
 
-                    var history = new DirectoryHistory(workingDir).Load();
+                    var history = new DirectoryHistory(workingDir, fileSystem).Load();
 
                     if (!history.Logs.Any())
                         CConsole.Success("No history!");
@@ -122,7 +125,7 @@ namespace RenameX
                     CConsole.Info("Working directory: ");
                     CConsole.WriteLine(workingDir.FullName);
 
-                    var history = new DirectoryHistory(workingDir).Load();
+                    var history = new DirectoryHistory(workingDir, fileSystem).Load();
 
                     if (!history.Logs.Any())
                     {
@@ -133,8 +136,8 @@ namespace RenameX
                     var lastRenameOp = history.Logs.OrderBy(x => x.DateUtc).Last();
                     foreach (var entry in lastRenameOp.Entries)
                     {
-                        if (File.Exists(workingDir.PathCombine(entry.NewName)))
-                            File.Move(workingDir.PathCombine(entry.NewName), workingDir.PathCombine(entry.OldName));
+                        if (fileSystem.File.Exists(workingDir.PathCombine(entry.NewName)))
+                            fileSystem.File.Move(workingDir.PathCombine(entry.NewName), workingDir.PathCombine(entry.OldName));
                     }
                     return 0;
                 });
@@ -166,7 +169,7 @@ namespace RenameX
                     return 1;
                 }
 
-                var operation = new RenameOperation(settings);
+                var operation = new RenameOperation(fileSystem, settings);
                 return operation.Run() ? 0 : 1;
             });
 

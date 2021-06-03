@@ -1,28 +1,29 @@
-﻿using System;
+﻿using RenameX.FileSystem;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Text.Json;
 
 namespace RenameX.History
 {
     public class DirectoryHistory
     {
-        private static JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             WriteIndented = true
         };
 
         private readonly DirectoryInfo _directory;
+        private readonly IFileSystem _fileSystem;
         private readonly FileInfo _historyFile;
 
 
-        public DirectoryHistory(DirectoryInfo directory)
+        public DirectoryHistory(DirectoryInfo directory, IFileSystem fileSystem)
         {
             _directory = directory;
+            _fileSystem = fileSystem;
             _historyFile = new FileInfo(Consts.AppDataDirectory.PathCombine(_directory.GetHistoryFileName()));
             Logs = new List<OperationLog>();
         }
@@ -34,7 +35,7 @@ namespace RenameX.History
             if (!_historyFile.Exists)
                 return this;
 
-            var json = File.ReadAllText(_historyFile.FullName);
+            var json = _fileSystem.File.ReadAllText(_historyFile.FullName);
             if (string.IsNullOrWhiteSpace(json))
                 json = "[]";
 
@@ -48,7 +49,7 @@ namespace RenameX.History
 
         public DirectoryHistory Save()
         {
-            File.WriteAllText(_historyFile.FullName, JsonSerializer.Serialize(Logs, _jsonOptions));
+            _fileSystem.File.WriteAllText(_historyFile.FullName, JsonSerializer.Serialize(Logs, _jsonOptions));
             return this;
         }
     }
