@@ -16,15 +16,14 @@ namespace RenameX.Tests.Infrastructure
             _drive = drive;
         }
 
-        public static string? GetDirectoryNameDefault(string? path) => Path.GetDirectoryName(path)?.Replace('\\', '/');
-
-        public string? GetDirectoryName(string? path) => GetDirectoryNameDefault(path)?.Replace('\\', '/');
+        public static string? GetDirectoryNameDefault(string? path) => NormalizePath(Path.GetDirectoryName(path));
+        public string? GetDirectoryName(string? path) => GetDirectoryNameDefault(path);
 
 
         public static string GetFileNameDefault(string path) => Path.GetFileName(path);
-
         public static string GetFileNameWithoutExtensionDefault(string path) => Path.GetFileNameWithoutExtension(path);
 
+        public string Combine(params string[] paths) => NormalizePath(Path.Combine(paths))!;
 
         public string GetTempFileName()
         {
@@ -36,6 +35,11 @@ namespace RenameX.Tests.Infrastructure
 
             _drive.GetDirectory("/tmp").AddFile(new MemoryFile(randomName));
             return randomName;
+        }
+
+        private static string? NormalizePath(string? path)
+        {
+            return path?.Replace('\\', '/');
         }
     }
 }

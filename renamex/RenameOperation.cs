@@ -39,48 +39,23 @@ namespace RenameX
                 return false;
             }
 
-            var filesToRename = GetFilesToRename();
-
             var handlers = new List<FileHandler>();
-            int longestFileName = 0;
 
-            foreach (var handler in filesToRename.Select(f => new FileHandler(_fileSystem, f, Settings.ModifyExtensions)))
+            foreach (var handler in GetFilesToRename().Select(f => new FileHandler(_fileSystem, f, Settings.ModifyExtensions)))
             {
                 handlers.Add(handler);
 
-                if (handler.OldName.Length > longestFileName)
-                    longestFileName = handler.OldName.Length;
+                //if (handler.OldName.Length > longestFileName)
+                //    longestFileName = handler.OldName.Length;
 
                 handler.Apply(strategies);
             }
 
+            int longestFileName = handlers.Max(h => h.OldName.Length);
+
             if (Settings.InteractiveMode)
             {
-                var tmpFile = _fileSystem.Path.GetTempFileName();
-                _fileSystem.File.Move(tmpFile, tmpFile + ".txt");
-                tmpFile += ".txt";
-
-                _fileSystem.File.WriteAllLines(
-                    tmpFile,
-                    handlers.Select(h => h.GetOldToNewNameString(longestFileName)).ToArray());
-
-                CConsole.InfoLine("Waiting for text editor to close...");
-
-                Process.Start(new ProcessStartInfo(tmpFile) { UseShellExecute = true }).WaitForExit();
-
-                var editedNames = _fileSystem.File.ReadAllLines(tmpFile).Select(l => l.Split("=>").Select(x => x.Trim()).ToArray()).ToArray();
-                _fileSystem.File.Delete(tmpFile);
-
-                handlers = handlers.Where(h =>
-                {
-                    var editedName = editedNames.FirstOrDefault(en => en[0] == h.OldName);
-                    if (editedName == null)
-                        return false;
-
-                    h.DirectlyUpdateNewName(editedName[1]);
-                    return true;
-                })
-                .ToList();
+                StartInteractiveEditing(handlers, longestFileName);
             }
 
             // Filter out files where the name hasn't changed
@@ -120,7 +95,7 @@ namespace RenameX
 
                 foreach (var handler in handlers)
                 {
-                    FileCommitResult result = handler.Commit();
+                    FileCommitResult result = handler.Commit(out var error);
 
                     if (result == FileCommitResult.Success)
                     {
@@ -130,6 +105,14 @@ namespace RenameX
                         // If verbose, print the rename that took place
                         if (Settings.Verbose)
                             CConsole.SuccessLine($"[RENAMED] {handler.GetOldToNewNameString(longestFileName)}");
+                    }
+                    else if (result == FileCommitResult.FileAlreadyExists)
+                    {
+                        CConsole.Warning($"'{handler.OldName}' was not renamed. A file named '{handler.NewName}' already exists.");
+                    }
+                    else if (result == FileCommitResult.Error)
+                    {
+                        CConsole.Warning($"'{handler.OldName}' was not renamed to '{handler.NewName}'. Error: {error}");
                     }
                 }
 
@@ -147,9 +130,60 @@ namespace RenameX
             return true;
         }
 
-        public IEnumerable<FileInfo> GetFilesToRename()
+        private void StartInteractiveEditing(List<FileHandler> handlers, int longestFileName)
         {
-            return Settings.Directory.EnumerateFiles(
+            var tmpFile = _fileSystem.Path.GetTempFileName();
+            _fileSystem.File.Move(tmpFile, tmpFile + ".txt");
+            tmpFile += ".txt";
+
+            try
+            {
+                _fileSystem.File.WriteAllLines(
+                    tmpFile,
+                    handlers.Select(h => h.GetOldToNewNameString(longestFileName)).ToArray());
+
+                CConsole.InfoLine("Waiting for text editor to close...");
+
+                Process.Start(new ProcessStartInfo(tmpFile) { UseShellExecute = true }).WaitForExit();
+
+                var editMap = _fileSystem.File.ReadAllLines(tmpFile)
+                    .Select(l => l.Split("=>").Select(x => x.Trim()).ToArray())
+                    .ToArray();
+
+                var handlersToRemove = new List<FileHandler>();
+
+                foreach (var handler in handlers)
+                {
+                    var edit = editMap.FirstOrDefault(l => l[0] == handler.OldName);
+
+                    // If user removes the line in interactive mode, they don't want to rename that file
+                    if (edit == null)
+                    {
+                        handlersToRemove.Add(handler);
+                        continue;
+                    }
+
+                    string newName = edit[1];
+
+                    handler.DirectlyUpdateNewName(newName);
+                }
+
+                foreach (var handler in handlersToRemove)
+                {
+                    handlers.Remove(handler);
+                }
+            }
+            finally
+            {
+                if (_fileSystem.File.Exists(tmpFile))
+                    _fileSystem.File.Delete(tmpFile);
+            }
+        }
+
+        public IEnumerable<string> GetFilesToRename()
+        {
+            return Directory.EnumerateFiles(
+                Settings.Directory.FullName,
                 Settings.Filter ?? string.Empty,
                 new EnumerationOptions()
                 {

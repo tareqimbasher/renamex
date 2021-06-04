@@ -2,24 +2,27 @@
 using RenameX.RenamingStrategies;
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace RenameX
 {
     public class FileHandler
     {
         private readonly IFileSystem _fileSystem;
-        private readonly FileInfo _existingFile;
+        private readonly string _existingFilePath;
+        private readonly string _existingFileExtension;
 
-        public FileHandler(IFileSystem fileSystem, FileInfo existingFile, bool modifyExtension)
+        public FileHandler(IFileSystem fileSystem, string existingFilePath, bool modifyExtension)
         {
             _fileSystem = fileSystem;
-            _existingFile = existingFile;
+            _existingFilePath = existingFilePath;
+            _existingFileExtension = fileSystem.Path.GetExtension(existingFilePath);
+
             ModifyExtension = modifyExtension;
+            OldName = fileSystem.Path.GetFileName(existingFilePath);
             NewName = OldName;
         }
 
-        public string OldName => _existingFile.Name;
+        public string OldName { get; }
         public bool ModifyExtension { get; }
         public string NewName { get; private set; }
 
@@ -34,7 +37,7 @@ namespace RenameX
                 nameToModify = strategy.TransformName(nameToModify);
             }
 
-            NewName = ModifyExtension ? nameToModify : (nameToModify + _existingFile.Extension);
+            NewName = ModifyExtension ? nameToModify : (nameToModify + _existingFileExtension);
         }
 
         public void DirectlyUpdateNewName(string newName)
@@ -42,32 +45,34 @@ namespace RenameX
             NewName = newName;
         }
 
-        public FileCommitResult Commit()
+        public FileCommitResult Commit(out string? error)
         {
+            error = null;
+
             if (!NewNameDiffersFromOld)
                 return FileCommitResult.NameUnchanged;
 
-            DirectoryInfo workingDir = _existingFile.Directory;
-            string newFilePath = _fileSystem.Path.Combine(workingDir.FullName, NewName);
-
-            // Prevent overwriting existing files
-            if (_fileSystem.File.Exists(newFilePath))
-            {
-                CConsole.Warning($"A file with name '{NewName}' already exists. File will not be renamed.");
-                return FileCommitResult.FileAlreadyExists;
-            }
-
-            // Perform actual rename
             try
             {
+                string workingDirPath = _fileSystem.Path.GetDirectoryName(_existingFilePath)!;
+                string newFilePath = _fileSystem.Path.Combine(workingDirPath, NewName);
+
+                // Prevent overwriting existing files
+                if (_fileSystem.File.Exists(newFilePath))
+                {
+                    CConsole.Warning($"A file with name '{NewName}' already exists. File will not be renamed.");
+                    return FileCommitResult.FileAlreadyExists;
+                }
+
+                // Perform actual rename
                 _fileSystem.File.Move(
-                    _fileSystem.Path.Combine(workingDir.FullName, OldName),
-                    _fileSystem.Path.Combine(workingDir.FullName, NewName),
+                    _fileSystem.Path.Combine(workingDirPath, OldName),
+                    _fileSystem.Path.Combine(workingDirPath, NewName),
                     overwrite: false);
             }
             catch (Exception ex)
             {
-                CConsole.Error($"Error renaming file: {OldName}. {ex.Message}");
+                error = ex.Message;
                 return FileCommitResult.Error;
             }
 

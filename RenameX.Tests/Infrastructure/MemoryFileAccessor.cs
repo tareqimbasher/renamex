@@ -36,7 +36,7 @@ namespace RenameX.Tests.Infrastructure
         {
             bool destFileExists = _drive.FileExists(destFileName);
 
-            if (!overwrite)
+            if (destFileExists && !overwrite)
                 throw new InvalidOperationException($"{nameof(destFileName)} already exists.");
 
             var sourceFile = _drive.GetFile(sourceFileName);

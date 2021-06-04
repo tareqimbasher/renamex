@@ -2,9 +2,9 @@
 {
     public enum FileCommitResult
     {
-        Success = 1,
-        NameUnchanged = 2,
+        NameUnchanged = 1,
+        Success = 2,
         FileAlreadyExists = 3,
-        Error = 3
+        Error = 4
     }
 }
