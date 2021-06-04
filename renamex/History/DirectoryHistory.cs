@@ -24,7 +24,7 @@ namespace RenameX.History
         {
             _directory = directory;
             _fileSystem = fileSystem;
-            _historyFile = new FileInfo(Consts.AppDataDirectory.PathCombine(_directory.GetHistoryFileName()));
+            _historyFile = new FileInfo(fileSystem.Path.Combine(Consts.AppDataDirectory.FullName, _directory.GetHistoryFileName()));
             Logs = new List<OperationLog>();
         }
 

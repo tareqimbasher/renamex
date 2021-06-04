@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using RenameX.FileSystem;
+using System.IO;
 using Xunit;
 
 namespace RenameX.Tests.Infrastructure.Tests
@@ -20,7 +21,7 @@ namespace RenameX.Tests.Infrastructure.Tests
         [Fact]
         public void GetFileName()
         {
-            var path = GetMemoryPathAccessor();
+            IPath path = GetMemoryPathAccessor();
 
             Assert.Equal("test.txt", path.GetFileName("test.txt"));
             Assert.Equal("test.txt", path.GetFileName("/tmp/test.txt"));
@@ -31,7 +32,7 @@ namespace RenameX.Tests.Infrastructure.Tests
         [Fact]
         public void GetFileNameWithoutExtension()
         {
-            var path = GetMemoryPathAccessor();
+            IPath path = GetMemoryPathAccessor();
 
             Assert.Equal("test", path.GetFileNameWithoutExtension("test.txt"));
             Assert.Equal("test", path.GetFileNameWithoutExtension("/tmp/test.txt"));

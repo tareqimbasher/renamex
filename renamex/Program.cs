@@ -136,8 +136,12 @@ namespace RenameX
                     var lastRenameOp = history.Logs.OrderBy(x => x.DateUtc).Last();
                     foreach (var entry in lastRenameOp.Entries)
                     {
-                        if (fileSystem.File.Exists(workingDir.PathCombine(entry.NewName)))
-                            fileSystem.File.Move(workingDir.PathCombine(entry.NewName), workingDir.PathCombine(entry.OldName));
+                        if (fileSystem.File.Exists(fileSystem.Path.Combine(workingDir.FullName, entry.NewName)))
+                        {
+                            fileSystem.File.Move(
+                                fileSystem.Path.Combine(workingDir.FullName, entry.NewName),
+                                fileSystem.Path.Combine(workingDir.FullName, entry.OldName));
+                        }
                     }
                     return 0;
                 });

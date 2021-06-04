@@ -48,7 +48,7 @@ namespace RenameX
                 return FileCommitResult.NameUnchanged;
 
             DirectoryInfo workingDir = _existingFile.Directory;
-            string newFilePath = workingDir.PathCombine(NewName);
+            string newFilePath = _fileSystem.Path.Combine(workingDir.FullName, NewName);
 
             // Prevent overwriting existing files
             if (_fileSystem.File.Exists(newFilePath))
@@ -60,7 +60,10 @@ namespace RenameX
             // Perform actual rename
             try
             {
-                _fileSystem.File.Move(workingDir.PathCombine(OldName), workingDir.PathCombine(NewName), overwrite: false);
+                _fileSystem.File.Move(
+                    _fileSystem.Path.Combine(workingDir.FullName, OldName),
+                    _fileSystem.Path.Combine(workingDir.FullName, NewName),
+                    overwrite: false);
             }
             catch (Exception ex)
             {

@@ -10,6 +10,7 @@
     <Company>Meccasoft</Company>
     <Description>File renaming utility.</Description>
     <PackageTags>rename,utility,util</PackageTags>
+    <Version>0.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -23,12 +23,7 @@ namespace RenameX.Tests.Infrastructure
 
         public static string GetFileNameDefault(string path) => Path.GetFileName(path);
 
-        public string GetFileName(string path) => GetFileNameDefault(path);
-
-
         public static string GetFileNameWithoutExtensionDefault(string path) => Path.GetFileNameWithoutExtension(path);
-
-        public string GetFileNameWithoutExtension(string path) => GetFileNameWithoutExtensionDefault(path);
 
 
         public string GetTempFileName()
