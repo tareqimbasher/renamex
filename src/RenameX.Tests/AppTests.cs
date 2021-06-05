@@ -10,19 +10,22 @@ namespace RenameX.Tests
 {
     public class AppTests
     {
-        private static IEnumerable<object[]> GetArgsParsingData()
+        private static IEnumerable<object?[]> GetArgsParsingData()
         {
-            return new object[][]
+            return new object?[][]
             {
-                new object[] { "--filter *.jpg", new Func<Settings, bool>[] { settings => settings.Filter == "*.jpg" } },
-                new object[] { "--prepend Test", new Func<Settings, bool>[] { settings => settings.PrependText == "Test" } },
+                new object?[] { "--filter *.jpg", true, new Func<Settings, bool>[] { settings => settings.Filter == "*.jpg" } },
+                new object?[] { "--filter /", true, new Func<Settings, bool>[] { settings => settings.Filter == "/" } },
+                new object?[] { "--filter", false, null },
+                new object?[] { "--prepend Test", true, new Func<Settings, bool>[] { settings => settings.PrependText == "Test" } },
+                new object?[] { "--prepend", false, null },
                 //new object[] { "-t", new Func<Settings, bool>[] { settings => settings.TitleCase } },
             };
         }
 
         [Theory]
         [MemberData(nameof(GetArgsParsingData))]
-        public void ArgsParsing(string argsStr, IEnumerable<Func<Settings, bool>> evals)
+        public void ArgsParsing(string argsStr, bool expectedSuccess, IEnumerable<Func<Settings, bool>> evals)
         {
             var args = new[] { "test" }.Union(argsStr.Split(' ')).ToArray();
 
@@ -41,7 +44,11 @@ namespace RenameX.Tests
                 }
             });
 
-            cli.Execute(args);
+            var exception = Record.Exception(() => cli.Execute(args));
+            if (expectedSuccess)
+                Assert.Null(exception);
+            else
+                Assert.NotNull(exception);
         }
 
         private (CommandLineApplication cli, CommandLineApplication cmd) GetCliApp()
