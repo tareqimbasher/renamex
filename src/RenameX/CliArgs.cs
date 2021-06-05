@@ -37,7 +37,7 @@ namespace RenameX
                     "Can be used multiple times to specify multiple text values to replace."
             };
 
-            ReplaceWithOption = new CommandOption("-rw|--replace-with <TXT>", CommandOptionType.SingleOrNoValue)
+            ReplaceWithOption = new CommandOption("-rw|--replace-with <TXT>", CommandOptionType.SingleValue)
             {
                 Description = "Text to replace with. Required when using --replace option."
             };
@@ -68,7 +68,7 @@ namespace RenameX
                 Description = "Disables logging rename in history log."
             };
 
-            DryRunOption = new CommandOption("--dry", CommandOptionType.NoValue)
+            DryRunOption = new CommandOption("--dry|--dry-run", CommandOptionType.NoValue)
             {
                 Description = "Dry Run. Will not make any changes."
             };

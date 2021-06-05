@@ -14,12 +14,48 @@ namespace RenameX.Tests
         {
             return new object?[][]
             {
-                new object?[] { "--filter *.jpg", true, new Func<Settings, bool>[] { settings => settings.Filter == "*.jpg" } },
-                new object?[] { "--filter /", true, new Func<Settings, bool>[] { settings => settings.Filter == "/" } },
                 new object?[] { "--filter", false, null },
-                new object?[] { "--prepend Test", true, new Func<Settings, bool>[] { settings => settings.PrependText == "Test" } },
+                new object?[] { "--filter *.jpg", true, new Func<Settings, bool>[] { settings => settings.Filter == "*.jpg" } },
+                new object?[] { "--filter:*.jpg", true, new Func<Settings, bool>[] { settings => settings.Filter == "*.jpg" } },
+                new object?[] { "-f *.jpg", true, new Func<Settings, bool>[] { settings => settings.Filter == "*.jpg" } },
+                new object?[] { "-f:*.jpg", true, new Func<Settings, bool>[] { settings => settings.Filter == "*.jpg" } },
+
                 new object?[] { "--prepend", false, null },
-                //new object[] { "-t", new Func<Settings, bool>[] { settings => settings.TitleCase } },
+                new object?[] { "--prepend Test", true, new Func<Settings, bool>[] { settings => settings.PrependText == "Test" } },
+                new object?[] { "--prepend:Test", true, new Func<Settings, bool>[] { settings => settings.PrependText == "Test" } },
+                new object?[] { "-p Test", true, new Func<Settings, bool>[] { settings => settings.PrependText == "Test" } },
+                new object?[] { "-p:Test", true, new Func<Settings, bool>[] { settings => settings.PrependText == "Test" } },
+
+                new object?[] { "--replace", false, null },
+                new object?[] { "--replace Test", true, new Func<Settings, bool>[] { settings => settings.ReplaceTexts.Single() == "Test" } },
+                new object?[] { "--replace:Test", true, new Func<Settings, bool>[] { settings => settings.ReplaceTexts.Single() == "Test" } },
+                new object?[] { "-r Test", true, new Func<Settings, bool>[] { settings => settings.ReplaceTexts.Single() == "Test" } },
+                new object?[] { "-r:Test", true, new Func<Settings, bool>[] { settings => settings.ReplaceTexts.Single() == "Test" } },
+
+                new object?[] { "--replace-with Test", true, new Func<Settings, bool>[] { settings => settings.ReplaceWithText == "Test" } },
+                new object?[] { "--replace-with:Test", true, new Func<Settings, bool>[] { settings => settings.ReplaceWithText == "Test" } },
+                new object?[] { "-rw Test", true, new Func<Settings, bool>[] { settings => settings.ReplaceWithText == "Test" } },
+                new object?[] { "-rw:Test", true, new Func<Settings, bool>[] { settings => settings.ReplaceWithText == "Test" } },
+
+                new object?[] { "--title-case", true, new Func<Settings, bool>[] { settings => settings.TitleCase == true } },
+                new object?[] { "-t", true, new Func<Settings, bool>[] { settings => settings.TitleCase == true } },
+                new object?[] { "--interactive", true, new Func<Settings, bool>[] { settings => settings.InteractiveMode == true } },
+                new object?[] { "-i", true, new Func<Settings, bool>[] { settings => settings.InteractiveMode == true } },
+                new object?[] { "--verbose", true, new Func<Settings, bool>[] { settings => settings.Verbose == true } },
+                new object?[] { "-v", true, new Func<Settings, bool>[] { settings => settings.Verbose == true } },
+                new object?[] { "--include-ext", true, new Func<Settings, bool>[] { settings => settings.ModifyExtensions == true } },
+                new object?[] { "--no-log", true, new Func<Settings, bool>[] { settings => settings.DisableHistoryLog == true } },
+                new object?[] { "--dry", true, new Func<Settings, bool>[] { settings => settings.DryRun == true } },
+                new object?[] { "--dry-run", true, new Func<Settings, bool>[] { settings => settings.DryRun == true } },
+
+                new object?[] { "--filter:*.jpg --prepend:PreTxt --replace:RepTxt1 --replace:RepTxt2 --replace-with:RwTxt", true, new Func<Settings, bool>[] 
+                    { 
+                        settings => settings.Filter == "*.jpg",
+                        settings => settings.PrependText == "PreTxt",
+                        settings => settings.ReplaceTexts[0] == "RepTxt1" && settings.ReplaceTexts[1] == "RepTxt2",
+                        settings => settings.ReplaceWithText == "RwTxt",
+                    }
+                },
             };
         }
 

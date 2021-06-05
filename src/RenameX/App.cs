@@ -56,8 +56,6 @@ namespace RenameX
             // Arguments
             var dirArg = cli.Argument("directory", "Directory with files to rename. If not specified, uses current working directory.");
 
-            var workingDir = GetWorkingDirectory(dirArg);
-
             // Options
             cli.HelpOption("-? | -h | --help", inherited: true);
 
@@ -75,7 +73,7 @@ namespace RenameX
             Settings = () =>
             {
                 return new Settings(
-                    workingDir,
+                    GetWorkingDirectory(dirArg),
                     CliArgs.FilterOption.HasValue() ? CliArgs.FilterOption.Value() : null,
                     CliArgs.ReplaceOption.HasValue() ? CliArgs.ReplaceOption.Values : null,
                     CliArgs.ReplaceWithOption.HasValue() ? CliArgs.ReplaceWithOption.Value() : null,
@@ -84,7 +82,7 @@ namespace RenameX
                     CliArgs.InteractiveOption.HasValue(),
                     CliArgs.ModifyExtensionsOption.HasValue(),
                     CliArgs.VerboseOption.HasValue(),
-                    CliArgs.DryRunOption.HasValue() || args.Contains("--dry"),
+                    CliArgs.DryRunOption.HasValue() || args.Contains("--dry") || args.Contains("--dry-run"),
                     CliArgs.DisableLoggingOption.HasValue()
                 );
             };

@@ -35,8 +35,8 @@ namespace RenameX
 
             if (!strategies.Any())
             {
-                CConsole.ErrorLine("No actions have been taken.");
-                return false;
+                CConsole.Info("No actions have been taken.");
+                return true;
             }
 
             var handlers = new List<FileHandler>();
@@ -44,11 +44,13 @@ namespace RenameX
             foreach (var handler in GetFilesToRename().Select(f => new FileHandler(_fileSystem, f, Settings.ModifyExtensions)))
             {
                 handlers.Add(handler);
-
-                //if (handler.OldName.Length > longestFileName)
-                //    longestFileName = handler.OldName.Length;
-
                 handler.Apply(strategies);
+            }
+
+            if (!handlers.Any())
+            {
+                CConsole.Info("No files to rename.");
+                return true;
             }
 
             int longestFileName = handlers.Max(h => h.OldName.Length);
@@ -184,7 +186,7 @@ namespace RenameX
         {
             return Directory.EnumerateFiles(
                 Settings.Directory.FullName,
-                Settings.Filter ?? string.Empty,
+                Settings.Filter ?? "*",
                 new EnumerationOptions()
                 {
                     IgnoreInaccessible = true
