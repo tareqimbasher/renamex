@@ -70,7 +70,8 @@ namespace RenameX
 
             if (ReplaceWithText != null)
             {
-                if (Path.GetInvalidFileNameChars().Any(c => ReplaceWithText.Contains(c)))
+                if (Path.GetInvalidFileNameChars().Any(c => ReplaceWithText.Contains(c)) ||
+                    ReplaceWithText.Contains('/'))
                 {
                     errors.Add("Invalid file name characters passed to --replace-with option.");
                     return false;
