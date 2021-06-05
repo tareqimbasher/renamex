@@ -34,7 +34,7 @@ namespace RenameX
 
             if (!settings.Directory.Exists)
             {
-                CConsole.Error($"Directory '{settings.Directory.FullName}' does not exist.");
+                CConsole.ErrorLine($"Directory '{settings.Directory.FullName}' does not exist.");
                 return 1;
             }
 
@@ -44,7 +44,7 @@ namespace RenameX
             }
             catch (Exception ex)
             {
-                CConsole.Error(ex.Message);
+                CConsole.ErrorLine(ex.Message);
                 return 1;
             }
         }
@@ -135,7 +135,7 @@ namespace RenameX
             var history = new DirectoryHistory(settings.Directory, _fileSystem).Load();
 
             if (!history.Logs.Any())
-                CConsole.Success("No history!");
+                CConsole.SuccessLine("No history!");
 
             foreach (var log in history.Logs)
             {
@@ -162,7 +162,7 @@ namespace RenameX
 
             if (!history.Logs.Any())
             {
-                CConsole.Success("No history!");
+                CConsole.SuccessLine("No history!");
                 return 1;
             }
 

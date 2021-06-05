@@ -57,18 +57,15 @@ namespace RenameX
                 string workingDirPath = _fileSystem.Path.GetDirectoryName(_existingFilePath)!;
                 string newFilePath = _fileSystem.Path.Combine(workingDirPath, NewName);
 
-                // Prevent overwriting existing files
-                if (_fileSystem.File.Exists(newFilePath))
-                {
-                    CConsole.Warning($"A file with name '{NewName}' already exists. File will not be renamed.");
-                    return FileCommitResult.FileAlreadyExists;
-                }
-
-                // Perform actual rename
+                // Perform actual rename and prevent overwriting existing files
                 _fileSystem.File.Move(
                     _fileSystem.Path.Combine(workingDirPath, OldName),
                     _fileSystem.Path.Combine(workingDirPath, NewName),
                     overwrite: false);
+            }
+            catch (System.IO.IOException ex) when (ex.Message == "Cannot create a file when that file already exists.")
+            {
+                return FileCommitResult.FileAlreadyExists;
             }
             catch (Exception ex)
             {

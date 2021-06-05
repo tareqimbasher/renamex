@@ -113,7 +113,7 @@ namespace RenameX.Tests.Infrastructure.Tests
 
             if (!overwrite)
             {
-                Assert.Throws<InvalidOperationException>(() => file.Move(sourceFilePath, destFilePath, overwrite: overwrite));
+                Assert.Throws<System.IO.IOException>(() => file.Move(sourceFilePath, destFilePath, overwrite: overwrite));
 
                 // Initial state should not have changed
                 checkInitialState();
@@ -159,7 +159,7 @@ namespace RenameX.Tests.Infrastructure.Tests
 
             if (!overwrite)
             {
-                Assert.Throws<InvalidOperationException>(() => file.Move(sourceFilePath, destFilePath, overwrite: overwrite));
+                Assert.Throws<System.IO.IOException>(() => file.Move(sourceFilePath, destFilePath, overwrite: overwrite));
 
                 // Initial state should not have changed
                 checkInitialState();

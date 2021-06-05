@@ -35,7 +35,7 @@ namespace RenameX
 
             if (!strategies.Any())
             {
-                CConsole.Info("No actions have been taken.");
+                CConsole.InfoLine("No actions have been taken.");
                 return true;
             }
 
@@ -49,7 +49,7 @@ namespace RenameX
 
             if (!handlers.Any())
             {
-                CConsole.Info("No files to rename.");
+                CConsole.InfoLine("No files to rename.");
                 return true;
             }
 
@@ -65,7 +65,7 @@ namespace RenameX
 
             if (!handlers.Any())
             {
-                CConsole.Info("No files were renamed.");
+                CConsole.InfoLine("No files were renamed.");
                 return true;
             }
 
@@ -110,17 +110,17 @@ namespace RenameX
                     }
                     else if (result == FileCommitResult.FileAlreadyExists)
                     {
-                        CConsole.Warning($"'{handler.OldName}' was not renamed. A file named '{handler.NewName}' already exists.");
+                        CConsole.WarningLine($"File '{handler.OldName}' was not renamed. A file named '{handler.NewName}' already exists.");
                     }
                     else if (result == FileCommitResult.Error)
                     {
-                        CConsole.Warning($"'{handler.OldName}' was not renamed to '{handler.NewName}'. Error: {error}");
+                        CConsole.WarningLine($"'{handler.OldName}' was not renamed to '{handler.NewName}'. Error: {error}");
                     }
                 }
 
                 if (!opLog.Entries.Any())
                 {
-                    CConsole.Info("No files were renamed.");
+                    CConsole.InfoLine("No files were renamed.");
                 }
                 else if (!Settings.DisableHistoryLog)
                 {
