@@ -25,6 +25,8 @@ renamex <DIR>
         [--verbose]
         [--no-log]
         [--dry-run]
+        [--version]
+        [--help]
 ```
 
 
@@ -32,10 +34,14 @@ renamex <DIR>
 
 ### History
 ```cli
-renamex history <DIR>
+renamex history <DIR> [--help]
 ```
 
 Prints the history log of the specified directory.
+
+History logs are saved in these locations:
+* Windows: `C:\ProgramData\renamex`
+* Linux/Mac: `/usr/share/renamex`
 
 
 ### Undo
@@ -45,6 +51,7 @@ renamex undo <DIR>
         [--verbose]
         [--no-log]
         [--dry-run]
+        [--help]
 ```
 
 Undo the last renaming changes to the specified directory, reverting file names as they were before the last renaming that took place. Unless the `--no-log` option is set, a new entry will be added to the history log for this revert of file names. This log entry also means that this "undo" can also be "undone."
@@ -113,3 +120,13 @@ By default when a rename operation occurs, a log entry will be added to the hist
 `--dry-run | --dry`
 
 If used, the app will not rename any files. Use with the `--verbose` option to see what the app would do in a real run.
+
+#### Version
+`--version`
+
+Prints the app version and exits.
+
+#### Help
+`--help | -h | -?`
+
+Prints the help menu.
