@@ -1,0 +1,19 @@
+﻿--filter | -f <SEARCHPATTERN>
+* --filterx | -fx <REGEX>
+* --append <TXT>
+--prepend | -p <TXT>
+--replace | -r <TXT>
+--replace-with | -rw <TXT>
+--title-case
+* --upper
+* --lower
+* --crop <INT>
+* --crop-start <INT>
+* --trim
+* --num
+--include-ext
+--interactive
+--verbose
+--no-log
+--dry-run
+--version

@@ -58,6 +58,7 @@ namespace RenameX
 
             // Options
             cli.HelpOption("-? | -h | --help", inherited: true);
+            cli.VersionOptionFromAssemblyAttributes(GetType().Assembly);
 
             cli.AddFilterOption()
                 .AddPrependOption()
@@ -108,10 +109,10 @@ namespace RenameX
                 cmd.OnExecute(() => ExecuteUndo(Settings()));
             });
 
-            cli.OnExecute(() => ExecuteRename(Settings()));
+            cli.OnExecute(() => ExecuteRename(Settings(), args));
         }
 
-        private int ExecuteRename(Settings settings)
+        private int ExecuteRename(Settings settings, string[] args)
         {
             // Verify settings
             if (!settings.Validate(out var errors))
@@ -123,7 +124,7 @@ namespace RenameX
                 return 1;
             }
 
-            var operation = new RenameOperation(_fileSystem, settings);
+            var operation = new RenameOperation(_fileSystem, settings, args);
             return operation.Run() ? 0 : 1;
         }
 
