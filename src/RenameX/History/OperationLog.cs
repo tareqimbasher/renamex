@@ -5,17 +5,15 @@ namespace RenameX.History
 {
     public class OperationLog
     {
-        public OperationLog() : this(DateTime.UtcNow)
-        {
-        }
-
-        public OperationLog(DateTime dateUtc)
+        public OperationLog(DateTime dateUtc, string[] args)
         {
             DateUtc = dateUtc;
+            Args = args;
             Entries = new List<OperationLogEntry>();
         }
 
         public DateTime DateUtc { get; set; }
+        public string[] Args { get; }
         public List<OperationLogEntry> Entries { get; set; }
     }
 }

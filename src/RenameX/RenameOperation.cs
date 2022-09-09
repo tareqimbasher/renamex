@@ -11,11 +11,13 @@ namespace RenameX
     public class RenameOperation
     {
         private readonly IFileSystem _fileSystem;
+        private readonly string[] _args;
 
-        public RenameOperation(IFileSystem fileSystem, Settings settings)
+        public RenameOperation(IFileSystem fileSystem, Settings settings, string[] args)
         {
             _fileSystem = fileSystem;
             Settings = settings;
+            _args = args;
         }
 
         public Settings Settings { get; }
@@ -93,7 +95,7 @@ namespace RenameX
                 }
 
                 var history = new DirectoryHistory(workingDir, _fileSystem).Load();
-                var opLog = new OperationLog(DateTime.UtcNow);
+                var opLog = new OperationLog(DateTime.UtcNow, _args);
 
                 foreach (var handler in handlers)
                 {

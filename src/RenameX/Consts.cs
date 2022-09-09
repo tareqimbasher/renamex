@@ -8,7 +8,7 @@ namespace RenameX
         static Consts()
         {
             AppDataDirectory = new DirectoryInfo(Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "renamex"));
         }
 
