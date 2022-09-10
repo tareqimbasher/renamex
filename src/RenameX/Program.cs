@@ -5,20 +5,19 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace RenameX
+namespace RenameX;
+
+public class Program
 {
-    public class Program
+    public static int Main(string[] args)
     {
-        public static int Main(string[] args)
-        {
-            // Ensure app data folder is created
-            if (!Consts.AppDataDirectory.Exists)
-                Consts.AppDataDirectory.Create();
+        // Ensure app data folder is created
+        if (!Consts.AppDataDirectory.Exists)
+            Consts.AppDataDirectory.Create();
 
-            var fileSystem = new RealFileSystem();
+        var fileSystem = new RealFileSystem();
 
-            var app = new App(fileSystem);
-            return app.Run(args);
-        }
+        var app = new App(fileSystem);
+        return app.Run(args);
     }
 }

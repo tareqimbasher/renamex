@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace RenameX.Tests.Infrastructure
+namespace RenameX.Tests.Infrastructure;
+
+public class FileNotFoundException : Exception
 {
-    public class FileNotFoundException : Exception
+    public FileNotFoundException(string message) : base(message)
     {
-        public FileNotFoundException(string message) : base(message)
-        {
-        }
     }
 }

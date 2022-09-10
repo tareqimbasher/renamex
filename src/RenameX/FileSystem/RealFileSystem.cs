@@ -1,18 +1,17 @@
-﻿namespace RenameX.FileSystem
+﻿namespace RenameX.FileSystem;
+
+internal class RealFileSystem : IFileSystem
 {
-    internal class RealFileSystem : IFileSystem
+    public RealFileSystem()
     {
-        public RealFileSystem()
-        {
-            Directory = new RealDirectory();
-            File = new RealFile();
-            Path = new RealPath();
-        }
-
-        public IDirectory Directory { get; }
-
-        public IFile File { get; }
-
-        public IPath Path { get; }
+        Directory = new RealDirectory();
+        File = new RealFile();
+        Path = new RealPath();
     }
+
+    public IDirectory Directory { get; }
+
+    public IFile File { get; }
+
+    public IPath Path { get; }
 }

@@ -1,10 +1,10 @@
-﻿namespace RenameX.Tests.Infrastructure
+﻿namespace RenameX.Tests.Infrastructure;
+
+public class MemoryDriveData
 {
-    public class MemoryDriveData
+    public static MemoryDrive FillWithDefaultData(MemoryDrive drive)
     {
-        public static MemoryDrive FillWithDefaultData(MemoryDrive drive)
-        {
-            return drive
+        return drive
                 .AddDirectory(new MemoryDirectory("/tmp"))
                 .AddDirectory(new MemoryDirectory("/home/documents")
                     .AddFile(new MemoryFile("/home/documents/text file.txt"))
@@ -20,6 +20,5 @@
                     .AddFile(new MemoryFile("/home/pictures/Fishing Trip/photo-5.jpg"))
                 )
             ;
-        }
     }
 }

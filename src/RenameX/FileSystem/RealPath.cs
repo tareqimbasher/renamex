@@ -1,9 +1,8 @@
 ﻿using System.IO;
 
-namespace RenameX.FileSystem
+namespace RenameX.FileSystem;
+
+internal class RealPath : IPath
 {
-    internal class RealPath : IPath
-    {
-        public string GetTempFileName() => Path.GetTempFileName();
-    }
+    public string GetTempFileName() => Path.GetTempFileName();
 }

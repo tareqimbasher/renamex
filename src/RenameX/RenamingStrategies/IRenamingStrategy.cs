@@ -1,7 +1,6 @@
-﻿namespace RenameX.RenamingStrategies
+﻿namespace RenameX.RenamingStrategies;
+
+public interface IRenamingStrategy
 {
-    public interface IRenamingStrategy
-    {
-        string? TransformName(string? name);
-    }
+    string? TransformName(string? name);
 }

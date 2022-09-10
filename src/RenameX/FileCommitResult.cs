@@ -1,10 +1,9 @@
-﻿namespace RenameX
+﻿namespace RenameX;
+
+public enum FileCommitResult
 {
-    public enum FileCommitResult
-    {
-        NameUnchanged = 1,
-        Success = 2,
-        FileAlreadyExists = 3,
-        Error = 4
-    }
+    NameUnchanged = 1,
+    Success = 2,
+    FileAlreadyExists = 3,
+    Error = 4
 }

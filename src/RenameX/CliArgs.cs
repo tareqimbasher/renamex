@@ -1,134 +1,133 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 
-namespace RenameX
+namespace RenameX;
+
+public static class CliArgs
 {
-    public static class CliArgs
+    public static CommandOption FilterOption { get; }
+    public static CommandOption PrependOption { get; }
+    public static CommandOption ReplaceOption { get; }
+    public static CommandOption ReplaceWithOption { get; }
+    public static CommandOption TitleCaseOption { get; }
+    public static CommandOption InteractiveOption { get; }
+    public static CommandOption VerboseOption { get; }
+    public static CommandOption ModifyExtensionsOption { get; }
+    public static CommandOption DisableLoggingOption { get; }
+    public static CommandOption DryRunOption { get; }
+
+    static CliArgs()
     {
-        public static CommandOption FilterOption { get; }
-        public static CommandOption PrependOption { get; }
-        public static CommandOption ReplaceOption { get; }
-        public static CommandOption ReplaceWithOption { get; }
-        public static CommandOption TitleCaseOption { get; }
-        public static CommandOption InteractiveOption { get; }
-        public static CommandOption VerboseOption { get; }
-        public static CommandOption ModifyExtensionsOption { get; }
-        public static CommandOption DisableLoggingOption { get; }
-        public static CommandOption DryRunOption { get; }
-
-        static CliArgs()
+        FilterOption = new CommandOption("-f|--filter <SEARCHPATTERN>", CommandOptionType.SingleValue)
         {
-            FilterOption = new CommandOption("-f|--filter <SEARCHPATTERN>", CommandOptionType.SingleValue)
-            {
-                Description = "Filter the files to rename. Selects all files in specified directory by default."
-            };
+            Description = "Filter the files to rename. Selects all files in specified directory by default."
+        };
 
-            PrependOption = new CommandOption("-p|--prepend <TXT>", CommandOptionType.SingleValue)
-            {
-                Description = "Prepend text to each file name. If specified text already exists " +
-                    "at the start of a file name, it will not be additionally prepended."
-            };
-
-            ReplaceOption = new CommandOption("-r|--replace <TXT>", CommandOptionType.MultipleValue)
-            {
-                Description = "Replace the specified text in file name. " +
-                    "Can be used multiple times to specify multiple text values to replace."
-            };
-
-            ReplaceWithOption = new CommandOption("-rw|--replace-with <TXT>", CommandOptionType.SingleValue)
-            {
-                Description = "Text to replace with. Required when using --replace option."
-            };
-
-            TitleCaseOption = new CommandOption("-t|--title-case", CommandOptionType.NoValue)
-            {
-                Description = "Capitalize the first letter of every word."
-            };
-
-            InteractiveOption = new CommandOption("-i|--interactive", CommandOptionType.NoValue)
-            {
-                Description = "Allows the command to stop and wait for user input or action (for example to confirm renaming)." +
-                    "Also allows user to further modify the calculated new file names in a text editor."
-            };
-
-            VerboseOption = new CommandOption("-v|--verbose", CommandOptionType.NoValue)
-            {
-                Description = "Be verbose."
-            };
-
-            ModifyExtensionsOption = new CommandOption("--include-ext", CommandOptionType.NoValue)
-            {
-                Description = "Include file extension in renaming. Extensions are excluded by default."
-            };
-
-            DisableLoggingOption = new CommandOption("--no-log", CommandOptionType.NoValue)
-            {
-                Description = "Disables logging rename in history log."
-            };
-
-            DryRunOption = new CommandOption("--dry|--dry-run", CommandOptionType.NoValue)
-            {
-                Description = "Dry Run. Will not make any changes."
-            };
-        }
-
-        public static CommandLineApplication AddFilterOption(this CommandLineApplication cli)
+        PrependOption = new CommandOption("-p|--prepend <TXT>", CommandOptionType.SingleValue)
         {
-            cli.AddOption(FilterOption);
-            return cli;
-        }
+            Description = "Prepend text to each file name. If specified text already exists " +
+                          "at the start of a file name, it will not be additionally prepended."
+        };
 
-        public static CommandLineApplication AddPrependOption(this CommandLineApplication cli)
+        ReplaceOption = new CommandOption("-r|--replace <TXT>", CommandOptionType.MultipleValue)
         {
-            cli.AddOption(PrependOption);
-            return cli;
-        }
+            Description = "Replace the specified text in file name. " +
+                          "Can be used multiple times to specify multiple text values to replace."
+        };
 
-        public static CommandLineApplication AddReplaceOption(this CommandLineApplication cli)
+        ReplaceWithOption = new CommandOption("-rw|--replace-with <TXT>", CommandOptionType.SingleValue)
         {
-            cli.AddOption(ReplaceOption);
-            return cli;
-        }
+            Description = "Text to replace with. Required when using --replace option."
+        };
 
-        public static CommandLineApplication AddReplaceWithOption(this CommandLineApplication cli)
+        TitleCaseOption = new CommandOption("-t|--title-case", CommandOptionType.NoValue)
         {
-            cli.AddOption(ReplaceWithOption);
-            return cli;
-        }
+            Description = "Capitalize the first letter of every word."
+        };
 
-        public static CommandLineApplication AddTitleCaseOption(this CommandLineApplication cli)
+        InteractiveOption = new CommandOption("-i|--interactive", CommandOptionType.NoValue)
         {
-            cli.AddOption(TitleCaseOption);
-            return cli;
-        }
+            Description = "Allows the command to stop and wait for user input or action (for example to confirm renaming)." +
+                          "Also allows user to further modify the calculated new file names in a text editor."
+        };
 
-        public static CommandLineApplication AddInteractiveOption(this CommandLineApplication cli)
+        VerboseOption = new CommandOption("-v|--verbose", CommandOptionType.NoValue)
         {
-            cli.AddOption(InteractiveOption);
-            return cli;
-        }
+            Description = "Be verbose."
+        };
 
-        public static CommandLineApplication AddVerboseOption(this CommandLineApplication cli)
+        ModifyExtensionsOption = new CommandOption("--include-ext", CommandOptionType.NoValue)
         {
-            cli.AddOption(VerboseOption);
-            return cli;
-        }
+            Description = "Include file extension in renaming. Extensions are excluded by default."
+        };
 
-        public static CommandLineApplication AddModifyExtensionsOption(this CommandLineApplication cli)
+        DisableLoggingOption = new CommandOption("--no-log", CommandOptionType.NoValue)
         {
-            cli.AddOption(ModifyExtensionsOption);
-            return cli;
-        }
+            Description = "Disables logging rename in history log."
+        };
 
-        public static CommandLineApplication AddDisableLoggingOption(this CommandLineApplication cli)
+        DryRunOption = new CommandOption("--dry|--dry-run", CommandOptionType.NoValue)
         {
-            cli.AddOption(DisableLoggingOption);
-            return cli;
-        }
+            Description = "Dry Run. Will not make any changes."
+        };
+    }
 
-        public static CommandLineApplication AddDryRunOption(this CommandLineApplication cli)
-        {
-            cli.AddOption(DryRunOption);
-            return cli;
-        }
+    public static CommandLineApplication AddFilterOption(this CommandLineApplication cli)
+    {
+        cli.AddOption(FilterOption);
+        return cli;
+    }
+
+    public static CommandLineApplication AddPrependOption(this CommandLineApplication cli)
+    {
+        cli.AddOption(PrependOption);
+        return cli;
+    }
+
+    public static CommandLineApplication AddReplaceOption(this CommandLineApplication cli)
+    {
+        cli.AddOption(ReplaceOption);
+        return cli;
+    }
+
+    public static CommandLineApplication AddReplaceWithOption(this CommandLineApplication cli)
+    {
+        cli.AddOption(ReplaceWithOption);
+        return cli;
+    }
+
+    public static CommandLineApplication AddTitleCaseOption(this CommandLineApplication cli)
+    {
+        cli.AddOption(TitleCaseOption);
+        return cli;
+    }
+
+    public static CommandLineApplication AddInteractiveOption(this CommandLineApplication cli)
+    {
+        cli.AddOption(InteractiveOption);
+        return cli;
+    }
+
+    public static CommandLineApplication AddVerboseOption(this CommandLineApplication cli)
+    {
+        cli.AddOption(VerboseOption);
+        return cli;
+    }
+
+    public static CommandLineApplication AddModifyExtensionsOption(this CommandLineApplication cli)
+    {
+        cli.AddOption(ModifyExtensionsOption);
+        return cli;
+    }
+
+    public static CommandLineApplication AddDisableLoggingOption(this CommandLineApplication cli)
+    {
+        cli.AddOption(DisableLoggingOption);
+        return cli;
+    }
+
+    public static CommandLineApplication AddDryRunOption(this CommandLineApplication cli)
+    {
+        cli.AddOption(DryRunOption);
+        return cli;
     }
 }
