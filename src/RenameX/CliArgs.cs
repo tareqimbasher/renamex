@@ -73,61 +73,61 @@ namespace RenameX
 
         public static CommandLineApplication AddFilterOption(this CommandLineApplication cli)
         {
-            cli.Options.Add(FilterOption);
+            cli.AddOption(FilterOption);
             return cli;
         }
 
         public static CommandLineApplication AddPrependOption(this CommandLineApplication cli)
         {
-            cli.Options.Add(PrependOption);
+            cli.AddOption(PrependOption);
             return cli;
         }
 
         public static CommandLineApplication AddReplaceOption(this CommandLineApplication cli)
         {
-            cli.Options.Add(ReplaceOption);
+            cli.AddOption(ReplaceOption);
             return cli;
         }
 
         public static CommandLineApplication AddReplaceWithOption(this CommandLineApplication cli)
         {
-            cli.Options.Add(ReplaceWithOption);
+            cli.AddOption(ReplaceWithOption);
             return cli;
         }
 
         public static CommandLineApplication AddTitleCaseOption(this CommandLineApplication cli)
         {
-            cli.Options.Add(TitleCaseOption);
+            cli.AddOption(TitleCaseOption);
             return cli;
         }
 
         public static CommandLineApplication AddInteractiveOption(this CommandLineApplication cli)
         {
-            cli.Options.Add(InteractiveOption);
+            cli.AddOption(InteractiveOption);
             return cli;
         }
 
         public static CommandLineApplication AddVerboseOption(this CommandLineApplication cli)
         {
-            cli.Options.Add(VerboseOption);
+            cli.AddOption(VerboseOption);
             return cli;
         }
 
         public static CommandLineApplication AddModifyExtensionsOption(this CommandLineApplication cli)
         {
-            cli.Options.Add(ModifyExtensionsOption);
+            cli.AddOption(ModifyExtensionsOption);
             return cli;
         }
 
         public static CommandLineApplication AddDisableLoggingOption(this CommandLineApplication cli)
         {
-            cli.Options.Add(DisableLoggingOption);
+            cli.AddOption(DisableLoggingOption);
             return cli;
         }
 
         public static CommandLineApplication AddDryRunOption(this CommandLineApplication cli)
         {
-            cli.Options.Add(DryRunOption);
+            cli.AddOption(DryRunOption);
             return cli;
         }
     }

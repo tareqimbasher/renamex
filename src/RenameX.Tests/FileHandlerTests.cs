@@ -38,7 +38,7 @@ namespace RenameX.Tests
         }
 
 
-        private static IEnumerable<object?[]> GetApplyStrategiesData()
+        public static IEnumerable<object?[]> GetApplyStrategiesData()
         {
             return new object?[][]
             {
@@ -62,7 +62,7 @@ namespace RenameX.Tests
         }
 
 
-        private static IEnumerable<object?[]> GetCommitData()
+        public static IEnumerable<object?[]> GetCommitData()
         {
             return new object?[][]
             {

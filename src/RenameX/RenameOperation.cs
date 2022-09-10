@@ -148,7 +148,15 @@ namespace RenameX
 
                 CConsole.InfoLine("Waiting for text editor to close...");
 
-                Process.Start(new ProcessStartInfo(tmpFile) { UseShellExecute = true }).WaitForExit();
+                var process = Process.Start(new ProcessStartInfo(tmpFile) { UseShellExecute = true });
+
+                if (process == null)
+                {
+                    CConsole.ErrorLine($"Could not start tmp file at: {tmpFile}");
+                    return;
+                }
+                
+                process.WaitForExit();
 
                 var editMap = _fileSystem.File.ReadAllLines(tmpFile)
                     .Select(l => l.Split("=>").Select(x => x.Trim()).ToArray())

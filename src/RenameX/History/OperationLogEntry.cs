@@ -2,10 +2,6 @@
 {
     public class OperationLogEntry
     {
-        public OperationLogEntry()
-        {
-        }
-
         public OperationLogEntry(string oldName, string newName)
         {
             OldName = oldName;

@@ -1,16 +1,15 @@
-﻿using McMaster.Extensions.CommandLineUtils;
-using RenameX.Tests.Infrastructure;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using McMaster.Extensions.CommandLineUtils;
+using RenameX.Tests.Infrastructure;
 using Xunit;
 
 namespace RenameX.Tests
 {
     public class AppTests
     {
-        private static IEnumerable<object?[]> GetArgsParsingData()
+        public static IEnumerable<object?[]> GetArgsParsingData()
         {
             return new object?[][]
             {

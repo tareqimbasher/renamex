@@ -90,7 +90,7 @@ namespace RenameX
             var history = cli.Command("history", cmd =>
             {
                 cmd.Description = "Print history of rename operations in the specified directory.";
-                cmd.Arguments.Add(dirArg);
+                cmd.AddArgument(dirArg);
 
                 cmd.OnExecute(() => ExecuteHistory(Settings()));
             });
@@ -98,7 +98,7 @@ namespace RenameX
             var undo = cli.Command("undo", cmd =>
             {
                 cmd.Description = "Undo the last rename operation.";
-                cmd.Arguments.Add(dirArg);
+                cmd.AddArgument(dirArg);
                 cmd.AddInteractiveOption()
                  .AddVerboseOption()
                  .AddDisableLoggingOption()
