@@ -89,15 +89,15 @@ public class Settings
         {
             rules.Add(new ReplaceTextStrategy(ReplaceTexts, ReplaceWithText));
         }
-
-        if (!string.IsNullOrEmpty(PrependText))
-        {
-            rules.Add(new PrependTextStrategy(PrependText));
-        }
-
+        
         if (TitleCase)
         {
             rules.Add(new TitleCaseStrategy(true));
+        }
+        
+        if (!string.IsNullOrEmpty(PrependText))
+        {
+            rules.Add(new PrependTextStrategy(PrependText));
         }
 
         return rules;

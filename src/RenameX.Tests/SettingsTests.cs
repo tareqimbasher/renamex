@@ -200,7 +200,7 @@ public class SettingsTests
             new object?[] { null, "prepend text", false, new[] { typeof(PrependTextStrategy) } },
             new object?[] { null, "", false, Type.EmptyTypes },
             new object?[] { null, null, true, new[] { typeof(TitleCaseStrategy) } },
-            new object?[] { new[] { "replace" }, "prepend text", true, new[] { typeof(ReplaceTextStrategy), typeof(PrependTextStrategy), typeof(TitleCaseStrategy) } },
+            new object?[] { new[] { "replace" }, "prepend text", true, new[] { typeof(ReplaceTextStrategy), typeof(TitleCaseStrategy), typeof(PrependTextStrategy) } },
         };
     }
 
