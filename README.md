@@ -92,6 +92,7 @@ You can specify the `--replace` option multiple times to replace multiple string
 `--title-case | -t`
 
 Capitalizes the first character of every word in the name. A new word is identified if it is preceded with a space or if it is the first word in the name.
+Words that are all CAPS will be considered acronyms and will not be title cased. Only relevant if passed with `--title-case`.
 
 #### File Extensions
 `--include-ext`

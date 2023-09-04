@@ -50,7 +50,7 @@ public class TitleCaseStragegyTests
     }
 
     [Fact]
-    public void Disabled_OldNameIsNotNull_OldNameShouldBeTitleCased()
+    public void Disabled_OldNameIsNotNull_OldNameAndNewNameShouldBeEqual()
     {
         string oldName = "calculus 2 - Unit one";
         var strategy = new TitleCaseStrategy(false);
@@ -69,5 +69,21 @@ public class TitleCaseStragegyTests
         var newName = strategy.TransformName(oldName);
 
         Assert.Equal("تجربة Upper Lower", newName);
+    }
+
+    [Theory]
+    [InlineData("the red fox", "The Red Fox")]
+    [InlineData("The red fox", "The Red Fox")]
+    [InlineData("the  red       fox", "The  Red       Fox")]
+    [InlineData("the red. fox.", "The Red. Fox.")]
+    [InlineData("THe RED FoX", "The RED Fox")]
+    [InlineData("I saw a little red fox", "I Saw A Little Red Fox")]
+    public void DoesRenameCorrectly(string oldName, string expectedNewName)
+    {
+        var strategy = new TitleCaseStrategy(true);
+
+        var newName = strategy.TransformName(oldName);
+        
+        Assert.Equal(expectedNewName, newName);
     }
 }

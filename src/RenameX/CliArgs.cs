@@ -41,12 +41,12 @@ public static class CliArgs
 
         TitleCaseOption = new CommandOption("-t|--title-case", CommandOptionType.NoValue)
         {
-            Description = "Capitalize the first letter of every word."
+            Description = "Title case the name; capitalize the first letter of every word."
         };
 
         InteractiveOption = new CommandOption("-i|--interactive", CommandOptionType.NoValue)
         {
-            Description = "Allows the command to stop and wait for user input or action (for example to confirm renaming)." +
+            Description = "Allows the command to stop and wait for user input or action (for example to confirm renaming). " +
                           "Also allows user to further modify the calculated new file names in a text editor."
         };
 
