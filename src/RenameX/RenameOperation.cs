@@ -74,12 +74,9 @@ public class RenameOperation
         // If dry run
         if (Settings.DryRun)
         {
-            if (Settings.Verbose)
+            foreach (var handler in handlers)
             {
-                foreach (var handler in handlers)
-                {
-                    CConsole.SuccessLine($"[DRYRUN] {handler.GetOldToNewNameString(longestFileName)}");
-                }
+                CConsole.SuccessLine($"[DRYRUN] {handler.GetOldToNewNameString(longestFileName)}");
             }
         }
         else

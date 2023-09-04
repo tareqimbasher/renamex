@@ -119,7 +119,7 @@ By default when a rename operation occurs, a log entry will be added to the hist
 #### Dry Run
 `--dry-run | --dry`
 
-If used, the app will not rename any files. Use with the `--verbose` option to see what the app would do in a real run.
+If used app will not rename any files, and will instead print what file renames would occur in a real run.
 
 #### Version
 `--version`
