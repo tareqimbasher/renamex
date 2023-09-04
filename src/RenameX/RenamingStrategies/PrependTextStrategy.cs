@@ -7,15 +7,14 @@ public class PrependTextStrategy : IRenamingStrategy
         TextToPrepend = textToPrepend;
     }
 
-    public string? TextToPrepend { get; set; }
+    public string? TextToPrepend { get; }
 
     public string? TransformName(string? name)
     {
         if (string.IsNullOrEmpty(TextToPrepend))
             return name;
 
-        if (name == null)
-            name = string.Empty;
+        name ??= string.Empty;
 
         return name.StartsWith(TextToPrepend) ? name : (TextToPrepend + name);
     }

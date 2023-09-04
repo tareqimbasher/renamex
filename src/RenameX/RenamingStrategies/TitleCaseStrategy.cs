@@ -9,7 +9,7 @@ public class TitleCaseStrategy : IRenamingStrategy
         ConvertToTitleCase = convertToTitleCase;
     }
 
-    public bool ConvertToTitleCase { get; set; }
+    public bool ConvertToTitleCase { get; }
 
     public string? TransformName(string? name)
     {

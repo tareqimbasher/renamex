@@ -69,22 +69,19 @@ public class App
             .AddDisableLoggingOption()
             .AddDryRunOption();
 
-        Settings = () =>
-        {
-            return new Settings(
-                GetWorkingDirectory(dirArg),
-                CliArgs.FilterOption.HasValue() ? CliArgs.FilterOption.Value() : null,
-                CliArgs.ReplaceOption.HasValue() ? CliArgs.ReplaceOption.Values : null,
-                CliArgs.ReplaceWithOption.HasValue() ? CliArgs.ReplaceWithOption.Value() : null,
-                CliArgs.PrependOption.HasValue() ? CliArgs.PrependOption.Value() : null,
-                CliArgs.TitleCaseOption.HasValue(),
-                CliArgs.InteractiveOption.HasValue(),
-                CliArgs.ModifyExtensionsOption.HasValue(),
-                CliArgs.VerboseOption.HasValue(),
-                CliArgs.DryRunOption.HasValue() || args.Contains("--dry") || args.Contains("--dry-run"),
-                CliArgs.DisableLoggingOption.HasValue()
-            );
-        };
+        Settings = () => new Settings(
+            GetWorkingDirectory(dirArg),
+            CliArgs.FilterOption.HasValue() ? CliArgs.FilterOption.Value() : null,
+            CliArgs.ReplaceOption.HasValue() ? CliArgs.ReplaceOption.Values : null,
+            CliArgs.ReplaceWithOption.HasValue() ? CliArgs.ReplaceWithOption.Value() : null,
+            CliArgs.PrependOption.HasValue() ? CliArgs.PrependOption.Value() : null,
+            CliArgs.TitleCaseOption.HasValue(),
+            CliArgs.InteractiveOption.HasValue(),
+            CliArgs.ModifyExtensionsOption.HasValue(),
+            CliArgs.VerboseOption.HasValue(),
+            CliArgs.DryRunOption.HasValue() || args.Contains("--dry") || args.Contains("--dry-run"),
+            CliArgs.DisableLoggingOption.HasValue()
+        );
 
         // Commands
         var history = cli.Command("history", cmd =>
@@ -119,6 +116,7 @@ public class App
             {
                 CConsole.ErrorLine(error);
             }
+
             return 1;
         }
 
@@ -175,6 +173,7 @@ public class App
                     _fileSystem.Path.Combine(workingDir.FullName, entry.OldName));
             }
         }
+
         return 0;
     }
 

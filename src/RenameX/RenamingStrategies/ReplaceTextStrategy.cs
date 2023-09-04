@@ -12,8 +12,8 @@ public class ReplaceTextStrategy : IRenamingStrategy
         ReplaceWith = replaceWith ?? string.Empty;
     }
 
-    public IEnumerable<string?> TextsToReplace { get; set; }
-    public string? ReplaceWith { get; set; }
+    public IEnumerable<string?> TextsToReplace { get; }
+    public string? ReplaceWith { get; }
 
     public string? TransformName(string? name)
     {
@@ -22,7 +22,7 @@ public class ReplaceTextStrategy : IRenamingStrategy
 
         foreach (var text in TextsToReplace)
         {
-            if (text == null || text == string.Empty)
+            if (string.IsNullOrEmpty(text))
                 continue;
 
             name = name.Replace(text, ReplaceWith);

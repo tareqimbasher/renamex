@@ -1,4 +1,5 @@
-﻿using RenameX.RenamingStrategies;
+﻿using System;
+using RenameX.RenamingStrategies;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,7 +24,7 @@ public class Settings
     {
         Directory = workingDirectory;
         Filter = filter;
-        ReplaceTexts = replaceTexts?.ToArray() ?? new string?[0];
+        ReplaceTexts = replaceTexts?.ToArray() ?? Array.Empty<string?>();
         ReplaceWithText = replaceWithText;
         PrependText = prependText;
         TitleCase = titleCase;
