@@ -55,8 +55,12 @@ public class App
         var dirArg = cli.Argument("directory", "Directory with files to rename. If not specified, uses current working directory.");
 
         // Options
-        cli.HelpOption("-? | -h | --help", inherited: true);
-        cli.VersionOptionFromAssemblyAttributes(GetType().Assembly);
+        cli.HelpOption("-?|-h|--help", inherited: true);
+        cli.VersionOption("-v|--version", null, () =>
+        {
+            var version = GetType().Assembly.GetName().Version!;
+            return $"{version.Major}.{version.Minor}.{version.MajorRevision}";
+        });
 
         cli.AddFilterOption()
             .AddPrependOption()

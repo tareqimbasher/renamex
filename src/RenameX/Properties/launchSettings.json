@@ -1,7 +1,8 @@
 {
   "profiles": {
     "RenameX": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "--dry-run --no-log -t -i \"/mnt/test\""
     }
   }
 }
